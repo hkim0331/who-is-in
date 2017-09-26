@@ -19,6 +19,11 @@ $ ./slow.sh
 $ open slow.mp4
 ```
 
+## FIXME
+
+* DEBUG=false で画面表示をやめたら、次のコードにたどり着くか？
+  break if GUI::wait_key(SLEEP)
+
 ## ChangeLog
 
 * [fixed] 手抜きのため、10 フレームしか、キャプチャできない。

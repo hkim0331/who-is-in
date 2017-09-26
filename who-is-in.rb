@@ -2,6 +2,8 @@
 require 'opencv'
 include OpenCV
 
+DEBUG  = false
+
 SLEEP  = 1000 # msec
 POINTS = 10
 THRES  = 10000
@@ -41,7 +43,7 @@ class App
     @num += 1
     # FIXME
     dest = File.join(dir,format("%04d.jpg",@num))
-    puts "#{Time.now} changed, will save as #{dest}"
+    puts "#{Time.now} changed, will save as #{dest}" if DEBUG
     im.save_image(dest)
   end
 end
