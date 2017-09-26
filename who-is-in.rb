@@ -5,7 +5,7 @@ include OpenCV
 SLEEP  = 1000 # msec
 POINTS = 10
 THRES  = 10000
-IMAGES = "./images"
+IMAGES = "./images/"
 
 class App
   attr_reader :points
@@ -37,20 +37,21 @@ class App
     d > THRES
   end
 
-  def save(im, dir=IMAGES)
+  def save(im, dir = IMAGES)
     @num += 1
-    puts "#{Time.now} changed, will save as #{@num}.jpg"
-    im.save_image(File.expand_path(dir,"#{@num}.jpg"))
+    dest = File.join(dir,"#{@num}.jpg")
+    puts "#{Time.now} changed, will save as #{dest}"
+    im.save_image(dest)
   end
 end
+
 #
 # main starts here
 #
+
 if __FILE__ == $0
   app = App.new
-  p app.points
   im0 = app.query
-
   while (true)
     im1 = app.query
     if app.diff?(im0,im1)
