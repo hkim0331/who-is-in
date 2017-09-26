@@ -39,7 +39,8 @@ class App
 
   def save(im, dir = IMAGES)
     @num += 1
-    dest = File.join(dir,"#{@num}.jpg")
+    # FIXME
+    dest = File.join(dir,format("%04d.jpg",@num))
     puts "#{Time.now} changed, will save as #{dest}"
     im.save_image(dest)
   end
