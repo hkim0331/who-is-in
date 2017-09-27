@@ -41,16 +41,17 @@ class App
 
   def save(im, dir = IMAGES)
     @num += 1
-    # FIXME
     dest = File.join(dir,format("%04d.jpg",@num))
     puts "#{Time.now} changed, will save as #{dest}" if DEBUG
     im.save_image(dest)
   end
-end
 
-#
-# main starts here
-#
+  # FIXME, does not close.
+  def close()
+    @window.destroy
+  end
+
+end
 
 if __FILE__ == $0
   app = App.new
@@ -64,5 +65,8 @@ if __FILE__ == $0
     end
     break if GUI::wait_key(SLEEP)
   end
+  app.close()
+  system("sh jpg2mp4.sh")
+  system("sh slow.sh")
+  system("open slow.mp4")
 end
-
