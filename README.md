@@ -13,10 +13,7 @@ Clojure/OpenCV3 で書き直したいぞ。
 ## usage
 
 ```sh
-$ ./who-is-in.rb
-$ ./jpg2mp4.sh
-$ ./slow.sh
-$ open slow.mp4
+$ make run
 ```
 
 ## FIXME
@@ -26,6 +23,7 @@ $ open slow.mp4
 
 ## ChangeLog
 
+* make run で走らせる。
 * [fixed] 手抜きのため、10 フレームしか、キャプチャできない。
   => 9999 フレームまでに拡張。
 

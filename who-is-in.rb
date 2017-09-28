@@ -66,7 +66,4 @@ if __FILE__ == $0
     break if GUI::wait_key(SLEEP)
   end
   app.close()
-  system("sh jpg2mp4.sh")
-  system("sh slow.sh")
-  system("open slow.mp4")
 end
