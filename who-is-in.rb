@@ -46,7 +46,6 @@ class App
     im.save_image(dest)
   end
 
-  # FIXME, does not close.
   def close()
     @window.destroy
   end
