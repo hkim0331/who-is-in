@@ -18,8 +18,8 @@ $ make run
 
 ## FIXME
 
-* DEBUG=false で画面表示をやめたら、次のコードにたどり着くか？
-  break if GUI::wait_key(SLEEP)
+* --headless したらどうやって break if GUI::wait_key(SLEEP)？
+  脱出のコードが必要だな。
 
 ## ChangeLog
 
