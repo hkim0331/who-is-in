@@ -14,18 +14,17 @@ Clojure/OpenCV3 で書き直したいぞ。
 
 ```sh
 $ make run
+or
+$ make --headless
 ```
 
 ## FIXME
 
 * 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
-* --headless したらどうやって break if GUI::wait_key(SLEEP)？
-  脱出のコードが必要だな。
-  linux サーバに USB カメラつないで夜通し監視させるようなケース。
-  時間でリセットするか？ --rest-at hh:mm:ss はどうか？
 
 ## ChangeLog
 
+* --reset-at hh:mm:ss オプション。
 * make run で走らせる。
 * [fixed] 手抜きのため、10 フレームしか、キャプチャできない。
   => 9999 フレームまでに拡張。
