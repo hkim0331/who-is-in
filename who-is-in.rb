@@ -5,8 +5,8 @@ include OpenCV
 DEBUG  = false
 
 SLEEP  = 1000 # msec
-POINTS = 10
-THRES  = 10000
+POINTS = 100
+THRES  = POINTS*1000
 IMAGES = "./images/"
 
 class App
@@ -47,14 +47,26 @@ class App
 
 end
 
+# FIXME: 脱出のオプションも一緒にチェックすること。不完全。
+def headless?(argv)
+  while arg = argv.shift
+    return true if arg =~ /--headless/
+  end
+  false
+end
+
 if __FILE__ == $0
+  preview = true
+  if headless?(ARGV)
+    preview = false
+  end
   app = App.new
   im0 = app.query
   while (true)
     im1 = app.query
     if app.diff?(im0,im1)
       app.save(im1)
-      app.show(im1)
+      app.show(im1) if preview
       im0 = im1
     end
     break if GUI::wait_key(SLEEP)

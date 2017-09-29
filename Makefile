@@ -7,3 +7,6 @@ clean:
 run:
 	make clean
 	./who-is-in.rb && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
+
+headless:
+	./who-is-in.rb --headless
