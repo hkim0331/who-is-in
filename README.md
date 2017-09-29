@@ -21,6 +21,8 @@ $ make run
 * 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
 * --headless したらどうやって break if GUI::wait_key(SLEEP)？
   脱出のコードが必要だな。
+  linux サーバに USB カメラつないで夜通し監視させるようなケース。
+  時間でリセットするか？ --rest-at hh:mm:ss はどうか？
 
 ## ChangeLog
 

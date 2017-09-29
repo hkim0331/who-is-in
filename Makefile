@@ -9,4 +9,5 @@ run:
 	./who-is-in.rb && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
 
 headless:
-	./who-is-in.rb --headless
+	make clean
+	@echo please try ./who-is-in.rb --reset-at hh:mm:ss
