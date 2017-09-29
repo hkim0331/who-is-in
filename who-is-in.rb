@@ -2,12 +2,11 @@
 require 'opencv'
 include OpenCV
 
-DEBUG  = false
-
+IMAGES = "./images/"
 SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
-IMAGES = "./images/"
+
 
 class App
   attr_reader :points
@@ -37,7 +36,6 @@ class App
   def save(im, dir = IMAGES)
     @num += 1
     dest = File.join(dir,format("%04d.jpg",@num))
-    puts "#{Time.now} changed, will save as #{dest}" if DEBUG
     im.save_image(dest)
   end
 
