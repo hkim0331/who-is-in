@@ -18,6 +18,7 @@ $ make run
 
 ## FIXME
 
+* 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
 * --headless したらどうやって break if GUI::wait_key(SLEEP)？
   脱出のコードが必要だな。
 
