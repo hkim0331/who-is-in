@@ -9,7 +9,6 @@ SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
 
-
 class App
   attr_reader :points
   def initialize
@@ -48,7 +47,6 @@ class App
 
 end
 
-# FIXME: 脱出のオプションも一緒にチェックすること。不完全。
 def headless?(argv)
   while arg = argv.shift
     puts arg
@@ -56,7 +54,6 @@ def headless?(argv)
       when /--reset-at/
         arg = argv.shift
         if arg =~ /\A\d\d:\d\d:\d\d\Z/
-#          puts "will return: "+arg
           return arg
         else
           raise "time format error: ${arg}"
@@ -76,10 +73,7 @@ if __FILE__ == $0
   headless = false
   reset_at = "never"
   if reset_at = headless?(ARGV)
-#    puts "rest_at:"+reset_at
     headless = true
-#  else
-#    puts "not headless"
   end
   app = App.new
   im0 = app.query
