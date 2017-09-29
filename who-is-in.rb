@@ -29,14 +29,9 @@ class App
     @window.show(m)
   end
 
-  # FIXME! not smart.
   def diff?(im0,im1)
-    d = 0
-    @points.each do |pt|
-      x,y = pt
-      d += (im0[y,x]-im1[y,x]).to_a.map{|z| z*z}.inject(:+)
-    end
-    d > THRES
+    @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
+      flatten.inject(:+) > THRES
   end
 
   def save(im, dir = IMAGES)
