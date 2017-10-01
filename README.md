@@ -15,18 +15,20 @@ Clojure/OpenCV3 で書き直したいぞ。
 ```sh
 $ make run
 or
-$ make --headless
+$ make headless
 ```
 
 ## FIXME
 
 * 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
+* make が嘘つき。
 
 ## ChangeLog
 
-* --reset-at hh:mm:ss オプション。
-* make run で走らせる。
-* [fixed] 手抜きのため、10 フレームしか、キャプチャできない。
+* [change] --reset-at を --exit-at に変更。
+* [new] --reset-at hh:mm:ss オプション。
+* [new] make run で走らせる。
+* [fix] 手抜きのため、10 フレームしか、キャプチャできない。
   => 9999 フレームまでに拡張。
 
 ---

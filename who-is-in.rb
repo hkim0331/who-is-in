@@ -15,7 +15,7 @@ class App
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
     im = @cam.query
-    width = im.width
+    width  = im.width
     height = im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
@@ -49,9 +49,9 @@ end
 
 def headless?(argv)
   while arg = argv.shift
-    puts arg
+#    puts arg
     case arg
-      when /--reset-at/
+      when /--exit-at/
         arg = argv.shift
         if arg =~ /\A\d\d:\d\d:\d\d\Z/
           return arg
@@ -71,8 +71,8 @@ end
 
 if __FILE__ == $0
   headless = false
-  reset_at = "never"
-  if reset_at = headless?(ARGV)
+  exit_at = "never"
+  if exit_at = headless?(ARGV)
     headless = true
   end
   app = App.new
@@ -85,7 +85,7 @@ if __FILE__ == $0
       im0 = im1
     end
     if headless
-      break if time_has_come?(reset_at)
+      break if time_has_come?(exit_at)
       sleep(SLEEP/1000.0)
     else
       break if GUI::wait_key(SLEEP)
