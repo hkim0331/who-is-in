@@ -11,12 +11,12 @@ THRES  = POINTS*1000
 
 class App
   attr_reader :points
+
   def initialize
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
     im = @cam.query
-    width  = im.width
-    height = im.height
+    width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
   end
@@ -36,9 +36,7 @@ class App
 
   def save(im, dir = IMAGES)
     @num += 1
-    dest = File.join(dir,format("%04d.jpg",@num))
-    puts "will save to #{dest}" if DEBUG
-    im.save_image(dest)
+    im.save_image(File.join(dir, format("%04d.jpg",@num)))
   end
 
   def close()
@@ -49,7 +47,6 @@ end
 
 def headless?(argv)
   while arg = argv.shift
-#    puts arg
     case arg
       when /--exit-at/
         arg = argv.shift
@@ -69,22 +66,22 @@ def time_has_come?(at)
   Time.now.strftime("%T") >= at
 end
 
+#
+# main starts here
+#
+
 if __FILE__ == $0
-  headless = false
-  exit_at = "never"
-  if exit_at = headless?(ARGV)
-    headless = true
-  end
+  exit_at = headless?(ARGV)
   app = App.new
   im0 = app.query
   while (true)
     im1 = app.query
     if app.diff?(im0,im1)
       app.save(im1)
-      app.show(im1) unless headless
+      app.show(im1) unless exit_at
       im0 = im1
     end
-    if headless
+    if exit_at
       break if time_has_come?(exit_at)
       sleep(SLEEP/1000.0)
     else

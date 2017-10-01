@@ -10,4 +10,4 @@ run:
 
 # how to pass hh:mm:ss parameter from 'make'?
 headless:
-	@echo please try make clean && ./who-is-in.rb --exit-at hh:mm:ss
+	@echo 'please try make clean && ./who-is-in.rb --exit-at hh:mm:ss'
