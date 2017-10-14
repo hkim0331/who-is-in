@@ -20,8 +20,8 @@ $ make headless
 
 ## FIXME
 
+* headless。make が嘘つき。
 * 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
-* make が嘘つき。
 
 ## ChangeLog
 
