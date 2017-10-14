@@ -21,7 +21,10 @@ class App
   def initialize
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
-    im = @cam.query
+    im = nil
+    while (im.nil?)
+      im = @cam.query
+    end
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
@@ -72,7 +75,7 @@ if __FILE__ == $0
   while arg = ARGV.shift
     case arg
     when /--exit-at/
-      arg = argv.shift
+      arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
         exit_at = arg
       else
