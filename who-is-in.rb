@@ -10,19 +10,19 @@ SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
 
-TEXT_X=50
+TEXT_X=10
 TEXT_Y=50
 TEXT_COLOR=CvColor::White
 THICKNESS=3
 
 class App
   attr_reader :points
+
   def initialize
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
     im = @cam.query
-    width = im.width
-    height = im.height
+    width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
   end
@@ -62,6 +62,10 @@ def time_has_come?(at)
   Time.now.strftime("%T") >= at
 end
 
+#
+# main starts here
+#
+
 if __FILE__ == $0
   exit_at = false
   with_date = false
@@ -80,7 +84,6 @@ if __FILE__ == $0
       raise "unknown arg: #{arg}"
     end
   end
-
   app = App.new
   im0 = app.query
   while (true)
