@@ -71,7 +71,7 @@ if __FILE__ == $0
   with_date = false
   while arg = ARGV.shift
     case arg
-    when /--reset-at/
+    when /--exit-at/
       arg = argv.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
         exit_at = arg
