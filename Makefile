@@ -6,7 +6,7 @@ clean:
 
 run:
 	make clean
-	./who-is-in.rb && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
+	./who-is-in.rb --with-date && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
 
 headless:
-	@echo please try make clean && ./who-is-in.rb --reset-at hh:mm:ss
+	@echo please try make clean && ./who-is-in.rb --with-date --exit-at hh:mm:ss
