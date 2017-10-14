@@ -4,10 +4,16 @@ include OpenCV
 
 DEBUG = true
 
-IMAGES = "./images/"
+IMAGES_DIR = "./images/"
+
 SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
+
+TEXT_X=10
+TEXT_Y=50
+TEXT_COLOR=CvColor::White
+THICKNESS=3
 
 class App
   attr_reader :points
@@ -34,32 +40,22 @@ class App
       flatten.inject(:+) > THRES
   end
 
-  def save(im, dir = IMAGES)
+  def save(im, dir, with_date)
     @num += 1
-    im.save_image(File.join(dir, format("%04d.jpg",@num)))
+    dest = File.join(dir,format("%04d.jpg",@num))
+    if with_date
+      im = im.put_text(Time.now.to_s,
+                       CvPoint.new(TEXT_X, TEXT_Y),
+                       CvFont.new(:simplex,:thickness => THICKNESS),
+                       TEXT_COLOR)
+    end
+    im.save_image(dest)
   end
 
   def close()
     @window.destroy
   end
 
-end
-
-def headless?(argv)
-  while arg = argv.shift
-    case arg
-      when /--exit-at/
-        arg = argv.shift
-        if arg =~ /\A\d\d:\d\d:\d\d\Z/
-          return arg
-        else
-          raise "time format error: ${arg}"
-        end
-      else
-        raise "unknown arg: #{arg}"
-      end
-  end
-  false
 end
 
 def time_has_come?(at)
@@ -71,13 +67,29 @@ end
 #
 
 if __FILE__ == $0
-  exit_at = headless?(ARGV)
+  exit_at = false
+  with_date = false
+  while arg = ARGV.shift
+    case arg
+    when /--reset-at/
+      arg = argv.shift
+      if arg =~ /\A\d\d:\d\d:\d\d\Z/
+        exit_at = arg
+      else
+        raise "time format error: ${arg}"
+      end
+    when /--with-date/
+      with_date=true
+    else
+      raise "unknown arg: #{arg}"
+    end
+  end
   app = App.new
   im0 = app.query
   while (true)
     im1 = app.query
     if app.diff?(im0,im1)
-      app.save(im1)
+      app.save(im1, IMAGES_DIR, with_date)
       app.show(im1) unless exit_at
       im0 = im1
     end
