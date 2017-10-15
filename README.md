@@ -20,11 +20,15 @@ $ make headless
 
 ## FIXME
 
-* headless。make が嘘つき。
-* 時刻を表すイメージを焼き込む（専門用語ではなんと言うか？）
+* 起動の仕方。make ががんばり足りない。
+* キャプチャの時間感覚を引数に。--interval オプション。
+* --exit-after オプション。
+* カメラキャプチャと wait_key との違う場面で SLEEP を使い回すのはオカシイ。
 
 ## ChangeLog
 
+* [change] query はキャプチャするまで回る。
+* [new] --with-date オプション。
 * [change] --reset-at を --exit-at に変更。
 * [new] --reset-at hh:mm:ss オプション。
 * [new] make run で走らせる。

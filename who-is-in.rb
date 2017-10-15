@@ -21,17 +21,19 @@ class App
   def initialize
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
-    im = nil
-    while (im.nil?)
-      im = @cam.query
-    end
+    im = @cam.query
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
   end
 
   def query
-    @cam.query
+    im = nil
+    while (im.nil?)
+      im = @cam.query
+      sleep(SLEEP/1000.0)
+    end
+    im
   end
 
   def show(m)
@@ -47,10 +49,10 @@ class App
     @num += 1
     dest = File.join(dir,format("%04d.jpg",@num))
     if with_date
-      im = im.put_text(Time.now.to_s,
-                       CvPoint.new(TEXT_X, TEXT_Y),
-                       CvFont.new(:simplex,:thickness => THICKNESS),
-                       TEXT_COLOR)
+      im.put_text!(Time.now.to_s,
+                   CvPoint.new(TEXT_X, TEXT_Y),
+                   CvFont.new(:simplex,:thickness => THICKNESS),
+                   TEXT_COLOR)
     end
     im.save_image(dest)
   end
@@ -70,6 +72,7 @@ end
 #
 
 if __FILE__ == $0
+
   exit_at = false
   with_date = false
   while arg = ARGV.shift
@@ -87,6 +90,7 @@ if __FILE__ == $0
       raise "unknown arg: #{arg}"
     end
   end
+
   app = App.new
   im0 = app.query
   while (true)
