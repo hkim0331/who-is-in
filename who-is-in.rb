@@ -107,9 +107,9 @@ if __FILE__ == $0
     when /--fps/
       fps = ARGV.shift.to_i
     when /--width/
-      width = ARGV.shif.to_i
+      width = ARGV.shift.to_i
     when /--height/
-      height = ARGV.shif.to_i
+      height = ARGV.shift.to_i
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
