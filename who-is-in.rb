@@ -4,16 +4,32 @@ include OpenCV
 
 DEBUG = true
 
-IMAGES_DIR = "./images/"
+IMAGES_DIR = "./images"
 
 SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
 
-TEXT_X=10
-TEXT_Y=50
-TEXT_COLOR=CvColor::White
-THICKNESS=3
+TEXT_X = 10
+TEXT_Y = 50
+TEXT_COLOR = CvColor::White
+THICKNESS = 3
+
+def usage(s)
+  print <<EOF
+#{s}
+#{$0} [--without-date] [--exit-at hh:mm:ss] [--exit-after sec]
+
+after #{$0}, ./jpg2mp4.sh summarizes jpgs into mp4 movie as out.mp4.
+./slow.sh makes slow movie from out.mp4 to slow.mp4,
+which is convenient to replay.
+
+with --exit-at or --exit-after option, captured image does not display
+on the screen during who-is-in execution.
+
+EOF
+  exit(0)
+end
 
 class App
   attr_reader :points
@@ -25,6 +41,7 @@ class App
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
+    Dir.glob("#{IMAGES_DIR}/*").map{ |f| File.unlink(f)}
   end
 
   def query
@@ -74,7 +91,7 @@ end
 if __FILE__ == $0
 
   exit_at = false
-  with_date = false
+  with_date = true
   while arg = ARGV.shift
     case arg
     when /--exit-at/
@@ -84,10 +101,14 @@ if __FILE__ == $0
       else
         raise "time format error: ${arg}"
       end
-    when /--with-date/
-      with_date=true
+    when /--exit-after/
+      exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
+    when /--without-date/
+      with_date = false
+    when /--/
+      usage "usage:"
     else
-      raise "unknown arg: #{arg}"
+      usage "unknown arg: #{arg}"
     end
   end
 

@@ -22,11 +22,14 @@ $ make headless
 
 * 起動の仕方。make ががんばり足りない。
 * キャプチャの時間感覚を引数に。--interval オプション。
-* --exit-after オプション。
 * カメラキャプチャと wait_key との違う場面で SLEEP を使い回すのはオカシイ。
 
 ## ChangeLog
 
+* [changed] 起動時に IMAGES_DIR をクリア。
+* [new] --exit-afger s オプション。
+* [new] --help オプション。オプションと使い方の説明。
+* [change] --with-date オプション廃止、--without-date に変更。
 * [change] query はキャプチャするまで回る。
 * [new] --with-date オプション。
 * [change] --reset-at を --exit-at に変更。
