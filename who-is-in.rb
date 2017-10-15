@@ -37,7 +37,7 @@ class App
   def initialize
     @window = GUI::Window.new("who is in?")
     @cam = CvCapture.open(0)
-    im = @cam.query
+    im = self.query
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
