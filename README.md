@@ -23,10 +23,12 @@ $ make headless
 * 起動の仕方。make ががんばり足りない。
 * キャプチャの時間感覚を引数に。--interval オプション。
 * カメラキャプチャと wait_key との違う場面で SLEEP を使い回すのはオカシイ。
+* 最初の1枚は必ずセーブしよう。
+* 必ずしもセーブしていない、最近のフレームをチェックする機能。
 
 ## ChangeLog
 
-* [changed] 起動時に IMAGES_DIR をクリア。
+* [change] 起動時に IMAGES_DIR をクリア。
 * [new] --exit-afger s オプション。
 * [new] --help オプション。オプションと使い方の説明。
 * [change] --with-date オプション廃止、--without-date に変更。

@@ -125,6 +125,7 @@ if __FILE__ == $0
 
   app = App.new(exit_at)
   im0 = app.query
+  app.save(im0, IMAGES_DIR, with_date)
   while (true)
     im1 = app.query
     if app.diff?(im0, im1)
