@@ -135,7 +135,7 @@ if __FILE__ == $0
     puts "height: " + height.to_s
   end
 
-  app = App.new(fps, width, hight, exit_at)
+  app = App.new(fps, width, height, exit_at)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
