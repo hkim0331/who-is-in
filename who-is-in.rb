@@ -35,18 +35,18 @@ class App
   attr_reader :points
 
   def initialize(headless)
+    @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
-    im = @cam.query
+    im = self.query
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
-    Dir.glob("#{IMAGES_DIR}/*").map{ |f| File.unlink(f)}
-    @window = GUI::Window.new("who is in?") unless headless
+    Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
   end
 
   def query
     im = nil
-    while (im.nil?)
+    while im.nil?
       im = @cam.query
       print "x" if im.nil? if $DEBUG
       sleep(SLEEP/1000.0)
@@ -74,6 +74,7 @@ class App
                    TEXT_COLOR)
     end
     im.save_image(dest)
+    print "C" if $DEBUG
   end
 
   def close()
@@ -124,6 +125,7 @@ if __FILE__ == $0
 
   app = App.new(exit_at)
   im0 = app.query
+  app.save(im0, IMAGES_DIR, with_date)
   while (true)
     im1 = app.query
     if app.diff?(im0, im1)
