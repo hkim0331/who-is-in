@@ -33,9 +33,11 @@ end
 class App
   attr_reader :points
 
-  def initialize(fps, headless)
+  def initialize(fps, width, height, headless)
     @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
+    @cam.width= width
+    @cam.height= height
     @cam.fps= fps
     im = self.query
     width, height  = im.width, im.height
@@ -96,12 +98,18 @@ if __FILE__ == $0
   exit_at = false
   with_date = true
   fps = 1
+  width = 640
+  height = 360
   while arg = ARGV.shift
     case arg
     when /--debug/
       $DEBUG = true
     when /--fps/
       fps = ARGV.shift.to_i
+    when /--width/
+      width = ARGV.shif.to_i
+    when /--height/
+      height = ARGV.shif.to_i
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -122,9 +130,12 @@ if __FILE__ == $0
   if $DEBUG
     puts "start: " + Time.now.strftime("%T")
     puts "end: " + exit_at if exit_at
+    puts "fps: " + fps.to_s
+    puts "width: " + width.to_s
+    puts "height: " + height.to_s
   end
 
-  app = App.new(fps, exit_at)
+  app = App.new(fps, width, hight, exit_at)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
