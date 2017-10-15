@@ -61,8 +61,10 @@ class App
   end
 
   def diff?(im0,im1)
-    @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
-      flatten.inject(:+) > THRES
+    d = @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
+      flatten.inject(:+)
+    puts d if $DEBUG
+    d > THRES
   end
 
   def save(im, dir, with_date)
@@ -75,7 +77,7 @@ class App
                    TEXT_COLOR)
     end
     im.save_image(dest)
-    print "C" if $DEBUG
+    print "c" if $DEBUG
   end
 
   def close()
@@ -97,7 +99,7 @@ if __FILE__ == $0
   $DEBUG = false
   exit_at = false
   with_date = true
-  fps = 1
+  fps = 1.0
   width = 640
   height = 360
   while arg = ARGV.shift
@@ -105,7 +107,7 @@ if __FILE__ == $0
     when /--debug/
       $DEBUG = true
     when /--fps/
-      fps = ARGV.shift.to_i
+      fps = ARGV.shift.to_r
     when /--width/
       width = ARGV.shift.to_i
     when /--height/
@@ -128,11 +130,11 @@ if __FILE__ == $0
     end
   end
   if $DEBUG
-    puts "start: " + Time.now.strftime("%T")
-    puts "end: " + exit_at if exit_at
-    puts "fps: " + fps.to_s
-    puts "width: " + width.to_s
-    puts "height: " + height.to_s
+    puts "start: #{Time.now.strftime('%T')}"
+    puts "end: #{exit_at}"
+    puts "fps: #{fps}"
+    puts "width: #{width}"
+    puts "height: #{height}"
   end
 
   app = App.new(fps, width, height, exit_at)
@@ -147,6 +149,7 @@ if __FILE__ == $0
     end
     if exit_at
       break if time_has_come?(exit_at)
+      sleep(1.0/fps)
     else
       break if GUI::wait_key(1000/fps)
     end
