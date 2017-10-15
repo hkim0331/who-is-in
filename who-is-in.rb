@@ -74,6 +74,7 @@ class App
                    TEXT_COLOR)
     end
     im.save_image(dest)
+    print "C" if $DEBUG
   end
 
   def close()
