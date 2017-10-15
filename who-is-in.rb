@@ -33,9 +33,11 @@ end
 class App
   attr_reader :points
 
-  def initialize(fps, headless)
+  def initialize(fps, width, height, headless)
     @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
+    @cam.width= width
+    @cam.height= height
     @cam.fps= fps
     im = self.query
     width, height  = im.width, im.height
@@ -59,8 +61,10 @@ class App
   end
 
   def diff?(im0,im1)
-    @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
-      flatten.inject(:+) > THRES
+    d = @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
+      flatten.inject(:+)
+    puts d if $DEBUG
+    d > THRES
   end
 
   def save(im, dir, with_date)
@@ -73,7 +77,7 @@ class App
                    TEXT_COLOR)
     end
     im.save_image(dest)
-    print "C" if $DEBUG
+    print "c" if $DEBUG
   end
 
   def close()
@@ -95,13 +99,19 @@ if __FILE__ == $0
   $DEBUG = false
   exit_at = false
   with_date = true
-  fps = 1
+  fps = 1.0
+  width = 640
+  height = 360
   while arg = ARGV.shift
     case arg
     when /--debug/
       $DEBUG = true
     when /--fps/
-      fps = ARGV.shift.to_i
+      fps = ARGV.shift.to_r
+    when /--width/
+      width = ARGV.shift.to_i
+    when /--height/
+      height = ARGV.shift.to_i
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -120,11 +130,14 @@ if __FILE__ == $0
     end
   end
   if $DEBUG
-    puts "start: " + Time.now.strftime("%T")
-    puts "end: " + exit_at if exit_at
+    puts "start: #{Time.now.strftime('%T')}"
+    puts "end: #{exit_at}"
+    puts "fps: #{fps}"
+    puts "width: #{width}"
+    puts "height: #{height}"
   end
 
-  app = App.new(fps, exit_at)
+  app = App.new(fps, width, height, exit_at)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
@@ -136,6 +149,7 @@ if __FILE__ == $0
     end
     if exit_at
       break if time_has_come?(exit_at)
+      sleep(1.0/fps)
     else
       break if GUI::wait_key(1000/fps)
     end
