@@ -6,7 +6,6 @@ DEBUG = true
 
 IMAGES_DIR = "./images"
 
-SLEEP  = 1000 # msec
 POINTS = 100
 THRES  = POINTS*1000
 
@@ -34,9 +33,10 @@ end
 class App
   attr_reader :points
 
-  def initialize(headless)
+  def initialize(fps, headless)
     @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
+    @cam.fps= fps
     im = self.query
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
@@ -49,7 +49,6 @@ class App
     while im.nil?
       im = @cam.query
       print "x" if im.nil? if $DEBUG
-      sleep(SLEEP/1000.0)
     end
     print "." if $DEBUG
     im
@@ -96,9 +95,13 @@ if __FILE__ == $0
   $DEBUG = false
   exit_at = false
   with_date = true
-
+  fps = 1
   while arg = ARGV.shift
     case arg
+    when /--debug/
+      $DEBUG = true
+    when /--fps/
+      fps = ARGV.shift.to_i
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -110,8 +113,6 @@ if __FILE__ == $0
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
     when /--without-date/
       with_date = false
-    when /--debug/
-      $DEBUG = true
     when /--/
       usage "usage:"
     else
@@ -119,11 +120,11 @@ if __FILE__ == $0
     end
   end
   if $DEBUG
-    puts "start: "+ Time.now.strftime("%T")
-    puts "end: "+ exit_at
+    puts "start: " + Time.now.strftime("%T")
+    puts "end: " + exit_at if exit_at
   end
 
-  app = App.new(exit_at)
+  app = App.new(fps, exit_at)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
@@ -135,9 +136,8 @@ if __FILE__ == $0
     end
     if exit_at
       break if time_has_come?(exit_at)
-      sleep(SLEEP/1000.0)
     else
-      break if GUI::wait_key(SLEEP)
+      break if GUI::wait_key(1000/fps)
     end
   end
   app.close()
