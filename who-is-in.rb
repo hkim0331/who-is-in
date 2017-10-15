@@ -41,12 +41,12 @@ class App
     width, height  = im.width, im.height
     @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
     @num = 0
-    Dir.glob("#{IMAGES_DIR}/*").map{ |f| File.unlink(f)}
+    Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
   end
 
   def query
     im = nil
-    while (im.nil?)
+    while im.nil?
       im = @cam.query
       sleep(SLEEP/1000.0)
     end
