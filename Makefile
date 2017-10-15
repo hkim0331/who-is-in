@@ -5,9 +5,14 @@ clean:
 	${RM} images/*.jpg
 
 run:
-	make clean
-	./who-is-in.rb --with-date && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
+	./who-is-in.rb && \
+	./jpg2mp4.sh && \
+	./slow.sh && \
+	open slow.mp4
 
-# how to pass hh:mm:ss parameter from 'make'?
+# capture 10 seconds
 headless:
-	@echo please try make clean && ./who-is-in.rb --with-date --exit-at hh:mm:ss
+	./who-is-in.rb --exit-after 10 && \
+	./jpg2mp4.sh && \
+	./slow.sh && \
+	open slow.mp4
