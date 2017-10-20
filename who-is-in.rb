@@ -48,7 +48,8 @@ class App
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
   rescue
-    raise "can not open cam. check the connection."
+    puts "can not open cam. check the connection."
+    exit(1)
   end
 
   def query
