@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# i love comment.
 require 'opencv'
 include OpenCV
 
