@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
+# i love comment.
 require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = 0.1.1
+VERSION = 0.1.2
 
 IMAGES_DIR = "./images"
 
