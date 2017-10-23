@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = 0.1.0
+VERSION = 0.1.1
 
 IMAGES_DIR = "./images"
 
