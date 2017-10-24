@@ -27,11 +27,17 @@ hkim@nuc:~$ lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 002: ID 8087:0a2b Intel Corp.
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+$
+```
+ここで USB カメラを適当なポートにつなぐ。
+
+```sh
 hkim@nuc:~$ lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 002: ID 8087:0a2b Intel Corp.
 Bus 001 Device 018: ID 046d:0821 Logitech, Inc. HD Webcam C910
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+$
 ```
 Logtech C910が Bus 001 Device 018 でホストに認識されている。
 
