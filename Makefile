@@ -5,5 +5,14 @@ clean:
 	${RM} images/*.jpg
 
 run:
-	make clean
-	./who-is-in.rb && ./jpg2mp4.sh && ./slow.sh && open slow.mp4
+	./who-is-in.rb && \
+	./jpg2mp4.sh && \
+	./slow.sh && \
+	open slow.mp4
+
+# capture 10 seconds
+headless:
+	./who-is-in.rb --exit-after 10 && \
+	./jpg2mp4.sh && \
+	./slow.sh && \
+	open slow.mp4
