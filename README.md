@@ -29,6 +29,7 @@ Bus 001 Device 002: ID 8087:0a2b Intel Corp.
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 $
 ```
+
 ここで USB カメラを適当なポートにつなぐ。
 
 ```sh
@@ -43,10 +44,10 @@ Logtech C910が Bus 001 Device 018 でホストに認識されている。
 
 ### これは必要か？
 
-vm2017 では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
+picaro では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
 
 ```sh
-vm2017$ lxc config device add container video0 unix-char path=/dev/video0
+picaro$ lxc config device add vm2017 video0 unix-char path=/dev/video0
 ```
 
 その後、
