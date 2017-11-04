@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = 0.1.2
+VERSION = "0.2.0"
 
 IMAGES_DIR = "./images"
 
@@ -37,8 +37,7 @@ EOF
   exit(0)
 end
 
-
-def sd(xs)
+def sd2(xs)
   length  = xs.length
   mean = xs.inject(:+)/length
   xs.map{|x| (x-mean)*(x-mean)}.inject(:+)/length
@@ -83,11 +82,11 @@ class App
   end
 
   def diff?(im0, im1)
-    d0 = sd(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
+    d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
     d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
       flatten.inject(:+)
-    puts "sd: #{d0}" if $DEBUG
-    puts "sd: #{d1}" if $DEBUG
+    puts "sd2:  #{d0}" if $DEBUG
+    puts "diff: #{d1}" if $DEBUG
     d1 > THRES
   end
 
