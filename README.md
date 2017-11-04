@@ -18,6 +18,48 @@ or
 $ make headless
 ```
 
+## LXD device through
+
+LXD ゲストで who-is-in する場合、ホスト側で認識した USB カメラをゲストで共有する必要がある。
+
+```sh
+hkim@nuc:~$ lsusb
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 002: ID 8087:0a2b Intel Corp.
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+hkim@nuc:~$ lsusb
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 002: ID 8087:0a2b Intel Corp.
+Bus 001 Device 018: ID 046d:0821 Logitech, Inc. HD Webcam C910
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+```
+Logtech C910が Bus 001 Device 018 でホストに認識されている。
+
+### これは必要か？
+
+vm2017 では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
+
+```sh
+vm2017$ lxc config device add container video0 unix-char path=/dev/video0
+```
+
+その後、
+
+```sh
+nuc$ lxc config device add opencv logitec unix-char path=/dev/bus/usb/001/018
+nuc$ lxc config device set opencv logitec mode 666
+```
+
+path= を忘れないように。
+
+### remove
+
+add の時に使った名前で、
+
+```sh
+nuc$ lxc config device remove container name
+```
+
 ## FIXME
 
 * 起動の仕方。make ががんばり足りない。
@@ -27,10 +69,12 @@ $ make headless
 
 ## ChangeLog
 
+* [add] --version オプション。0.5.0
+* [add] sd2. ピクセル差分の標準偏差で明暗が違うだけのフレームを捨てる。
 * [add] qt-rate.scpt
 * [change] 最初の1枚は必ずセーブ。
 * [change] 起動時に IMAGES_DIR をクリア。
-* [new] --exit-afger s オプション。
+* [new] --exit-after s オプション。
 * [new] --help オプション。オプションと使い方の説明。
 * [change] --with-date オプション廃止、--without-date に変更。
 * [change] query はキャプチャするまで回る。
