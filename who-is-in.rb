@@ -9,7 +9,7 @@ IMAGES_DIR = "./images"
 
 POINTS = 100
 
-THRES_0 = 1000
+THRES_0 = 2000
 THRES_1  = POINTS*1000
 
 TEXT_X = 10
@@ -85,15 +85,15 @@ class App
   end
 
   def diff?(im0, im1)
-    d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
-    d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
+    @d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
+    @d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
            flatten.inject(:+)
     if $DEBUG
       puts ""
-      puts "sd2:  #{d0}" if $DEBUG
-      puts "diff: #{d1}" if $DEBUG
+      puts "sd2:  #{@d0}"
+      puts "diff: #{@d1}"
     end
-    (d0 > THRES_0) and (d1 > THRES_1)
+    (@d0 > THRES_0) and (@d1 > THRES_1)
   end
 
   def save(im, dir, with_date)
@@ -104,6 +104,16 @@ class App
                    CvPoint.new(TEXT_X, TEXT_Y),
                    CvFont.new(:simplex,:thickness => THICKNESS),
                    TEXT_COLOR)
+      if $DEBUG
+        im.put_text!(@d0.to_s,
+                     CvPoint.new(TEXT_X, TEXT_Y+100),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
+        im.put_text!(@d1.to_s,
+                     CvPoint.new(TEXT_X, TEXT_Y+200),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
+      end
     end
     im.save_image(dest)
     print "c" if $DEBUG
