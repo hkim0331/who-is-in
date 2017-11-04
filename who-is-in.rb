@@ -3,6 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
+VERSION = 0.1.2
 
 IMAGES_DIR = "./images"
 
@@ -22,9 +23,12 @@ def usage(s)
       [--exit-at hh:mm:ss]
       [--exit-after sec]
 
-after #{$0}, ./jpg2mp4.sh summarizes jpgs into mp4 movie as out.mp4.
-./slow.sh makes slow movie from out.mp4 to slow.mp4,
+after #{$0}, ./jpg2mp4.sh converts captured jpgs into mp4 movie 'out.mp4'.
+
+./slow.sh makes 'out.mp4' slow to 'slow.mp4'.
 which is convenient to replay.
+
+qt-rate.scpt is a spimle QuickTime replay rate changer.
 
 with --exit-at or --exit-after option, captured image does not display
 on the screen during who-is-in execution. headless mode.
@@ -54,6 +58,9 @@ class App
     @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
+  rescue
+    puts "can not open cam. check the connection."
+    exit(1)
   end
 
   def query
@@ -123,6 +130,9 @@ if __FILE__ == $0
     case arg
     when /--debug/
       $DEBUG = true
+    when /--version/
+      puts VERSION
+      exit(1)
     when /--fps/
       fps = ARGV.shift.to_r
     when /--width/
