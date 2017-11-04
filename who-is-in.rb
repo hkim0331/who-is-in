@@ -17,31 +17,41 @@ THICKNESS = 3
 def usage(s)
   print <<EOF
 #{s}
-#{$0} [--without-date] [--exit-at hh:mm:ss] [--exit-after sec]
+#{$0} [--debug]
+      [--without-date]
+      [--exit-at hh:mm:ss]
+      [--exit-after sec]
 
 after #{$0}, ./jpg2mp4.sh summarizes jpgs into mp4 movie as out.mp4.
 ./slow.sh makes slow movie from out.mp4 to slow.mp4,
 which is convenient to replay.
 
 with --exit-at or --exit-after option, captured image does not display
-on the screen during who-is-in execution.
+on the screen during who-is-in execution. headless mode.
 
 EOF
   exit(0)
 end
 
+
+def sd(xs)
+  length  = xs.length
+  mean = xs.inject(:+)/length
+  xs.map{|x| (x-mean)*(x-mean)}.inject(:+)/length
+end
+
 class App
   attr_reader :points
 
-  def initialize(fps, width, height, headless)
-    @window = GUI::Window.new("who is in?") unless headless
+  def initialize(fps, width, height, exit_at)
+    @window = GUI::Window.new("who is in?") unless exit_at
     @cam = CvCapture.open(0)
     @cam.width= width
     @cam.height= height
     @cam.fps= fps
     im = self.query
     width, height  = im.width, im.height
-    @points = Array.new(POINTS).map{|x| [rand(width),rand(height)]}
+    @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
   end
@@ -60,11 +70,18 @@ class App
     @window.show(m)
   end
 
-  def diff?(im0,im1)
-    d = @points.map{|p| y,x = p; (im0[x,y]-im1[x,y]).to_a.map{|z| z*z}}.
+  def rgb2gray(pic)
+    r,g,b = pic
+    0.299*r + 0.587*g + 0.144*b
+  end
+
+  def diff?(im0, im1)
+    d0 = sd(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
+    d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
       flatten.inject(:+)
-    puts d if $DEBUG
-    d > THRES
+    puts "sd: #{d0}" if $DEBUG
+    puts "sd: #{d1}" if $DEBUG
+    d1 > THRES
   end
 
   def save(im, dir, with_date)
