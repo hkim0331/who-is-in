@@ -9,8 +9,8 @@ IMAGES_DIR = "./images"
 
 POINTS = 100
 
-THRES_0 = 2000
-THRES_1  = POINTS*1000
+THRES_0  = 3000
+THRES_1  = POINTS*3000
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -90,8 +90,8 @@ class App
            flatten.inject(:+)
     if $DEBUG
       puts ""
-      puts "sd2:  #{@d0}"
-      puts "diff: #{@d1}"
+      puts "sd2:  #{@d0.floor}"
+      puts "diff: #{@d1.floor}"
     end
     (@d0 > THRES_0) and (@d1 > THRES_1)
   end
