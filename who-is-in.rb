@@ -8,7 +8,9 @@ VERSION = "0.5.0"
 IMAGES_DIR = "./images"
 
 POINTS = 100
-THRES  = POINTS*1000
+
+THRES_0 = 1000
+THRES_1  = POINTS*1000
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -22,6 +24,7 @@ def usage(s)
       [--without-date]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
+      [--version]
 
 after #{$0}, ./jpg2mp4.sh converts captured jpgs into mp4 movie 'out.mp4'.
 
@@ -84,10 +87,13 @@ class App
   def diff?(im0, im1)
     d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
     d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
-      flatten.inject(:+)
-    puts "sd2:  #{d0}" if $DEBUG
-    puts "diff: #{d1}" if $DEBUG
-    d1 > THRES
+           flatten.inject(:+)
+    if $DEBUG
+      puts ""
+      puts "sd2:  #{d0}" if $DEBUG
+      puts "diff: #{d1}" if $DEBUG
+    end
+    (d0 > THRES_0) and (d1 > THRES_1)
   end
 
   def save(im, dir, with_date)
@@ -118,7 +124,6 @@ end
 #
 
 if __FILE__ == $0
-
   $DEBUG = false
   exit_at = false
   with_date = true
@@ -149,6 +154,9 @@ if __FILE__ == $0
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
     when /--without-date/
       with_date = false
+    when /--version/
+      puts VERSION
+      exit(0)
     when /--/
       usage "usage:"
     else
