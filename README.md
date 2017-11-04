@@ -69,6 +69,8 @@ nuc$ lxc config device remove container name
 
 ## ChangeLog
 
+* [add] --version オプション。0.5.0
+* [add] sd2. ピクセル差分の標準偏差で明暗が違うだけのフレームを捨てる。
 * [add] qt-rate.scpt
 * [change] 最初の1枚は必ずセーブ。
 * [change] 起動時に IMAGES_DIR をクリア。
