@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /home/hkim/who-is-in
+./who-is-in.rb --exit-at 24:00:00
+./jpg2mp4
+mv out.mp4 /opt/who-is-in/`date +%F`.mp4
+
