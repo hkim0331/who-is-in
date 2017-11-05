@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.3"
+VERSION = "0.5.6"
 
 IMAGES_DIR = "./images"
 
@@ -23,6 +23,7 @@ def usage(s)
 #{$0} [--debug]
       [--without-date]
       [--without-jpg2mp4]
+      [--headless]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
       [--reset-at hh:mm:ss]
@@ -161,6 +162,7 @@ if __FILE__ == $0
   reset_at = false
   with_date = true
   jpg2mp4 = true
+  headless = false
   fps = 1.0
   width = 640
   height = 360
@@ -177,6 +179,8 @@ if __FILE__ == $0
       width = ARGV.shift.to_i
     when /--height/
       height = ARGV.shift.to_i
+    when /--headless/
+      headless = true
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -234,9 +238,7 @@ if __FILE__ == $0
     else
       sleep(1.0/fps)
     end
-    unless (reset_at or exit_at)
-      GUI::wait_key(1000/fps)
-    end
+    GUI::wait_key(1000/fps) unless headless
   end
   app.close()
   do_jpg2mp4() if jpg2mp4
