@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.7"
+VERSION = "0.5.8"
 
 IMAGES_DIR = "./images"
 
@@ -56,8 +56,8 @@ end
 class App
   attr_reader :points
 
-  def initialize(fps, width, height, exit_at)
-    @window = GUI::Window.new("who is in?") unless exit_at
+  def initialize(fps, width, height, headless)
+    @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
     @cam.width= width
     @cam.height= height
@@ -216,10 +216,9 @@ if __FILE__ == $0
     puts "end: #{exit_at}"
     puts "fps: #{fps}"
     puts "width: #{width}"
-    puts "height: #{height}"
   end
 
-  app = App.new(fps, width, height, exit_at)
+  app = App.new(fps, width, height, headless)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
@@ -230,7 +229,9 @@ if __FILE__ == $0
       im0 = im1
     end
 
-    break if exit_at and time_has_come?(exit_at)
+    if exit_at and time_has_come?(exit_at)
+      break
+    end
 
     if reset_at and time_is?(reset_at)
       do_jpg2mp4() if jpg2mp4
