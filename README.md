@@ -69,6 +69,7 @@ nuc$ lxc config device remove container name
 
 ## ChangeLog
 
+* [change] GUI::wait\_key unless reset\_at or exit\_at
 * [change] -y (overwrite) to ffmpeg
 * [add] --without-jpg2mp4 オプション。
 * [add] --reset オプション。

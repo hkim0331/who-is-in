@@ -229,13 +229,12 @@ if __FILE__ == $0
       app.reset()
       sleep(61)
     end
-    if exit_at
-      if time_has_come?(exit_at)
-        break
-      else
-        sleep(1.0/fps)
-      end
+    if exit_at and time_has_come?(exit_at)
+      break
     else
+      sleep(1.0/fps)
+    end
+    unless (reset_at or exit_at)
       GUI::wait_key(1000/fps)
     end
   end
