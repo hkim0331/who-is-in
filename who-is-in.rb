@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.0"
+VERSION = "0.5.3"
 
 IMAGES_DIR = "./images"
 
@@ -22,11 +22,14 @@ def usage(s)
 #{s}
 #{$0} [--debug]
       [--without-date]
+      [--without-jpg2mp4]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
+      [--reset-at hh:mm:ss]
       [--version]
 
-after #{$0}, ./jpg2mp4.sh converts captured jpgs into mp4 movie 'out.mp4'.
+without --without-jpg2mp4 option,
+converts captured jpgs into mp4 movie 'out.mp4'.
 
 ./slow.sh makes 'out.mp4' slow to 'slow.mp4'.
 which is convenient to replay.
@@ -35,6 +38,9 @@ qt-rate.scpt is a spimle QuickTime replay rate changer.
 
 with --exit-at or --exit-after option, captured image does not display
 on the screen during who-is-in execution. headless mode.
+
+with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
+will be reset.
 
 EOF
   exit(0)
@@ -85,13 +91,14 @@ class App
   end
 
   def diff?(im0, im1)
-    @d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y])-rgb2gray(im1[x,y])})
-    @d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.
-           flatten.inject(:+)
+    @d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])})
+    @d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)
+    @d0 = @d0.floor
+    @d1 = @d1.floor
     if $DEBUG
       puts ""
-      puts "sd2:  #{@d0.floor}"
-      puts "diff: #{@d1.floor}"
+      puts "sd2:  #{@d0}"
+      puts "diff: #{@d1}"
     end
     (@d0 > THRES_0) and (@d1 > THRES_1)
   end
@@ -119,14 +126,29 @@ class App
     print "c" if $DEBUG
   end
 
+  def reset
+    system("rm -f images/*.jpg")
+    @num = 0
+  end
+
   def close()
     @window.destroy if @window
   end
 
 end
 
+def time_is?(at)
+  Time.now.strftime("%T") == at
+end
+
 def time_has_come?(at)
   Time.now.strftime("%T") >= at
+end
+
+def do_jpg2mp4()
+  unless Dir.glob("images/*.jpg").empty?
+    system("ffmpeg -y -f image2 -i images/%04d.jpg -framerate 1 out.mp4")
+  end
 end
 
 #
@@ -136,7 +158,9 @@ end
 if __FILE__ == $0
   $DEBUG = false
   exit_at = false
+  reset_at = false
   with_date = true
+  jpg2mp4 = true
   fps = 1.0
   width = 640
   height = 360
@@ -164,6 +188,15 @@ if __FILE__ == $0
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
     when /--without-date/
       with_date = false
+    when /--without-jpg2mp4/
+      jpg2mp4 = false
+    when /--reset-at/
+      arg = ARGV.shift
+      if arg =~ /\A\d\d:\d\d:\d\d\Z/
+        reset_at = arg
+      else
+        raise "time format error: ${arg}"
+      end
     when /--version/
       puts VERSION
       exit(0)
@@ -191,12 +224,21 @@ if __FILE__ == $0
       app.show(im1) unless exit_at
       im0 = im1
     end
+    if reset_at and time_is?(reset_at)
+      do_jpg2mp4() if jpg2mp4
+      app.reset()
+      sleep(61)
+    end
     if exit_at
-      break if time_has_come?(exit_at)
-      sleep(1.0/fps)
+      if time_has_come?(exit_at)
+        break
+      else
+        sleep(1.0/fps)
+      end
     else
-      break if GUI::wait_key(1000/fps)
+      GUI::wait_key(1000/fps)
     end
   end
   app.close()
+  do_jpg2mp4() if jpg2mp4
 end

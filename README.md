@@ -69,6 +69,9 @@ nuc$ lxc config device remove container name
 
 ## ChangeLog
 
+* [change] -y (overwrite) to ffmpeg
+* [add] --without-jpg2mp4 オプション。
+* [add] --reset オプション。
 * [add] --version オプション。0.5.0
 * [add] sd2. ピクセル差分の標準偏差で明暗が違うだけのフレームを捨てる。
 * [add] qt-rate.scpt
