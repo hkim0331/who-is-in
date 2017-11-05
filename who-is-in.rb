@@ -3,7 +3,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.6"
+VERSION = "0.5.7"
 
 IMAGES_DIR = "./images"
 
@@ -188,12 +188,6 @@ if __FILE__ == $0
       else
         raise "time format error: ${arg}"
       end
-    when /--exit-after/
-      exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
-    when /--without-date/
-      with_date = false
-    when /--without-jpg2mp4/
-      jpg2mp4 = false
     when /--reset-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -201,6 +195,12 @@ if __FILE__ == $0
       else
         raise "time format error: ${arg}"
       end
+    when /--exit-after/
+      exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
+    when /--without-date/
+      with_date = false
+    when /--without-jpg2mp4/
+      jpg2mp4 = false
     when /--version/
       puts VERSION
       exit(0)
@@ -210,6 +210,7 @@ if __FILE__ == $0
       usage "unknown arg: #{arg}"
     end
   end
+
   if $DEBUG
     puts "start: #{Time.now.strftime('%T')}"
     puts "end: #{exit_at}"
@@ -228,18 +229,24 @@ if __FILE__ == $0
       app.show(im1) unless exit_at
       im0 = im1
     end
+
+    break if exit_at and time_has_come?(exit_at)
+
     if reset_at and time_is?(reset_at)
       do_jpg2mp4() if jpg2mp4
       app.reset()
       sleep(61)
     end
-    if exit_at and time_has_come?(exit_at)
-      break
-    else
+
+    if headless
       sleep(1.0/fps)
+    else
+      GUI::wait_key(1000/fps) && break
     end
-    GUI::wait_key(1000/fps) unless headless
+
   end
-  app.close()
+
   do_jpg2mp4() if jpg2mp4
+  app.close()
+
 end
