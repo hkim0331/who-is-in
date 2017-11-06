@@ -1,0 +1,5 @@
+#!/bin/sh
+MP4=/home/hkim/who-is-in/out.mp4
+[ -f ${MP4} ] && ${MP4} /opt/who-is-in/`date +%F`.mp4
+
+

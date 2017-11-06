@@ -69,13 +69,18 @@ nuc$ lxc config device remove container name
 
 ## FIXME
 
-* 起動の仕方。make ががんばり足りない。
+* ログ。--debug モードで？
 * キャプチャの時間感覚を引数に。--interval オプション。
-* カメラキャプチャと wait_key との違う場面で SLEEP を使い回すのはオカシイ。
 * 必ずしもセーブしていない、最近のフレームをチェックする機能。
 
 ## ChangeLog
 
+* [change] GUI::wait\_key unless reset\_at or exit\_at
+* [change] -y (overwrite) to ffmpeg
+* [add] --without-jpg2mp4 オプション。
+* [add] --reset オプション。
+* [add] --version オプション。0.5.0
+* [add] sd2. ピクセル差分の標準偏差で明暗が違うだけのフレームを捨てる。
 * [add] qt-rate.scpt
 * [change] 最初の1枚は必ずセーブ。
 * [change] 起動時に IMAGES_DIR をクリア。
