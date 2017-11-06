@@ -10,8 +10,8 @@ IMAGES_DIR = "./images"
 
 POINTS = 100
 
-THRES_SD2   = 3000
-THRES_DIFF2 = 4000*POINTS
+THRES_SD2   = 10
+THRES_DIFF2 = 50*POINTS
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -237,9 +237,9 @@ if __FILE__ == $0
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
     im1 = app.query
+    app.show(im1) unless headless
     if app.diff?(im0, im1)
       app.save(im1, IMAGES_DIR, with_date)
-      app.show(im1) unless exit_at
       im0 = im1
     end
 
@@ -256,7 +256,8 @@ if __FILE__ == $0
     if headless
       sleep(1.0/fps)
     else
-      GUI::wait_key(1000/fps) && break
+      puts "headless: #{headless}"
+      GUI::wait_key((1000/fps).to_i)
     end
 
   end
