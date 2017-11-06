@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.0"
+VERSION = "0.6.1"
 
 IMAGES_DIR = "./images"
 
@@ -58,7 +58,7 @@ end
 class App
   attr_reader :points
 
-  def initialize(fps, width, height, headless)
+  def initialize(fps, width, height, headless, logfile)
     @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
     @cam.width= width
@@ -69,7 +69,9 @@ class App
     @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
-    @log = Logger.new("log/who-is-in.log")
+
+    system("touch #{logfile}")
+    @log = Logger.new(logfile)
     @log.level = if $DEBUG
                    Logger::DEBUG
                  else
@@ -228,7 +230,7 @@ if __FILE__ == $0
     puts "width: #{width}"
   end
 
-  app = App.new(fps, width, height, headless)
+  app = App.new(fps, width, height, headless, log)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
