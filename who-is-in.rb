@@ -102,9 +102,9 @@ class App
   end
 
   def diff?(im0, im1)
-    @mean = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+).floor
-    @sd2  = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])}).floor
-    @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+).floor
+    @mean  = (@points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS).floor
+    @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
+    @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
     (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
   end
@@ -166,16 +166,18 @@ end
 #
 
 if __FILE__ == $0
-  $DEBUG = false
-  exit_at = false
-  reset_at = false
+  $DEBUG    = false
+  exit_at   = false
+  reset_at  = false
   with_date = true
-  jpg2mp4 = true
-  headless = false
+  jpg2mp4   = true
+  headless  = false
   log = "log/who-is-in.log"
+
   fps = 1.0
   width = 640
   height = 360
+
   while arg = ARGV.shift
     case arg
     when /--debug/
