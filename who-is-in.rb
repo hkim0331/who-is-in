@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.0"
+VERSION = "0.6.1"
 
 IMAGES_DIR = "./images"
 
@@ -58,7 +58,7 @@ end
 class App
   attr_reader :points
 
-  def initialize(fps, width, height, headless)
+  def initialize(fps, width, height, headless, logfile)
     @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
     @cam.width= width
@@ -69,7 +69,9 @@ class App
     @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
-    @log = Logger.new("log/who-is-in.log")
+
+    system("touch #{logfile}")
+    @log = Logger.new(logfile)
     @log.level = if $DEBUG
                    Logger::DEBUG
                  else
@@ -100,9 +102,9 @@ class App
   end
 
   def diff?(im0, im1)
-    @mean = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+).floor
-    @sd2  = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])}).floor
-    @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+).floor
+    @mean  = (@points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS).floor
+    @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
+    @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
     (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
   end
@@ -164,16 +166,18 @@ end
 #
 
 if __FILE__ == $0
-  $DEBUG = false
-  exit_at = false
-  reset_at = false
+  $DEBUG    = false
+  exit_at   = false
+  reset_at  = false
   with_date = true
-  jpg2mp4 = true
-  headless = false
+  jpg2mp4   = true
+  headless  = false
   log = "log/who-is-in.log"
+
   fps = 1.0
   width = 640
   height = 360
+
   while arg = ARGV.shift
     case arg
     when /--debug/
@@ -228,7 +232,7 @@ if __FILE__ == $0
     puts "width: #{width}"
   end
 
-  app = App.new(fps, width, height, headless)
+  app = App.new(fps, width, height, headless, log)
   im0 = app.query
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
