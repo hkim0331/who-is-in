@@ -1,16 +1,17 @@
 #!/usr/bin/env ruby
+require 'logger'
 require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.8"
+VERSION = "0.6.0"
 
 IMAGES_DIR = "./images"
 
 POINTS = 100
 
-THRES_0  = 3000
-THRES_1  = POINTS*4000
+THRES_SD2   = 3000
+THRES_DIFF2 = 4000*POINTS
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -27,6 +28,7 @@ def usage(s)
       [--exit-at hh:mm:ss]
       [--exit-after sec]
       [--reset-at hh:mm:ss]
+      [--log logfile]
       [--version]
 
 without --without-jpg2mp4 option,
@@ -67,6 +69,12 @@ class App
     @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
+    @log = Logger.new("log/who-is-in.log")
+    @log.level = if $DEBUG
+                   Logger::DEBUG
+                 else
+                   Logger::INFO
+                 end
   rescue
     puts "can not open cam. check the connection."
     exit(1)
@@ -92,16 +100,11 @@ class App
   end
 
   def diff?(im0, im1)
-    @d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])})
-    @d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)
-    @d0 = @d0.floor
-    @d1 = @d1.floor
-    if $DEBUG
-      puts ""
-      puts "sd2:  #{@d0}"
-      puts "diff: #{@d1}"
-    end
-    (@d0 > THRES_0) and (@d1 > THRES_1)
+    @mean = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+).floor
+    @sd2  = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])}).floor
+    @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+).floor
+    @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
+    (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
   end
 
   def save(im, dir, with_date)
@@ -112,13 +115,17 @@ class App
                    CvPoint.new(TEXT_X, TEXT_Y),
                    CvFont.new(:simplex,:thickness => THICKNESS),
                    TEXT_COLOR)
-      if $DEBUG
-        im.put_text!(@d0.to_s,
+      if true
+        im.put_text!(@mean.to_s,
+                     CvPoint.new(TEXT_X, TEXT_Y+50),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
+        im.put_text!(@sd2.to_s,
                      CvPoint.new(TEXT_X, TEXT_Y+100),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
-        im.put_text!(@d1.to_s,
-                     CvPoint.new(TEXT_X, TEXT_Y+200),
+        im.put_text!(@diff2.to_s,
+                     CvPoint.new(TEXT_X, TEXT_Y+150),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
       end
@@ -163,6 +170,7 @@ if __FILE__ == $0
   with_date = true
   jpg2mp4 = true
   headless = false
+  log = "log/who-is-in.log"
   fps = 1.0
   width = 640
   height = 360
@@ -201,6 +209,8 @@ if __FILE__ == $0
       with_date = false
     when /--without-jpg2mp4/
       jpg2mp4 = false
+    when /--log/
+      log = ARGV.shift
     when /--version/
       puts VERSION
       exit(0)
