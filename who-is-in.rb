@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.1"
+VERSION = "0.6.2"
 
 IMAGES_DIR = "./images"
 
@@ -182,9 +182,6 @@ if __FILE__ == $0
     case arg
     when /--debug/
       $DEBUG = true
-    when /--version/
-      puts VERSION
-      exit(1)
     when /--fps/
       fps = ARGV.shift.to_r
     when /--width/
