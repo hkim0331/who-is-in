@@ -1,9 +1,5 @@
 all: run
 
-clean:
-	${RM} *.mp4
-	${RM} images/*.jpg
-
 run:
 	./who-is-in.rb && \
 	./jpg2mp4.sh && \
@@ -16,3 +12,7 @@ headless:
 	./jpg2mp4.sh && \
 	./slow.sh && \
 	open slow.mp4
+
+clean:
+	${RM} *.mp4
+	${RM} images/*.jpg
