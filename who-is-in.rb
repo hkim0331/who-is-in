@@ -4,12 +4,13 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.2"
+VERSION = "0.6.3"
 
 IMAGES_DIR = "./images"
 
 POINTS = 100
 
+THRES_MEAN  = 40
 THRES_SD2   = 10
 THRES_DIFF2 = 50*POINTS
 
@@ -106,7 +107,7 @@ class App
     @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
     @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
-    (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
+    (@mean > THRES_MEAN) and (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
   end
 
   def save(im, dir, with_date)
