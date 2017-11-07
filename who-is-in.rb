@@ -23,28 +23,29 @@ def usage(s)
   print <<EOF
 #{s}
 #{$0} [--debug]
+      [--fps fps]
+      [--width width]
+      [--height height]
+      [--headless]
       [--without-date]
       [--without-jpg2mp4]
-      [--headless]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
       [--reset-at hh:mm:ss]
       [--log logfile]
       [--version]
+      [--help]
 
 without --without-jpg2mp4 option,
 converts captured jpgs into mp4 movie 'out.mp4'.
 
+with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
+will be reset.
+
 ./slow.sh makes 'out.mp4' slow to 'slow.mp4'.
 which is convenient to replay.
 
-qt-rate.scpt is a spimle QuickTime replay rate changer.
-
-with --exit-at or --exit-after option, captured image does not display
-on the screen during who-is-in execution. headless mode.
-
-with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
-will be reset.
+./qt-rate.scpt is a spimle QuickTime replay rate changer.
 
 EOF
   exit(0)
@@ -207,10 +208,12 @@ if __FILE__ == $0
       end
     when /--exit-after/
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
+
     when /--without-date/
       with_date = false
     when /--without-jpg2mp4/
       jpg2mp4 = false
+
     when /--log/
       log = ARGV.shift
     when /--version/
