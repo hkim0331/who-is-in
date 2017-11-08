@@ -4,12 +4,13 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.2"
+VERSION = "0.6.3"
 
 IMAGES_DIR = "./images"
 
 POINTS = 100
 
+THRES_MEAN  = 40
 THRES_SD2   = 10
 THRES_DIFF2 = 50*POINTS
 
@@ -22,28 +23,29 @@ def usage(s)
   print <<EOF
 #{s}
 #{$0} [--debug]
+      [--fps fps]
+      [--width width]
+      [--height height]
+      [--headless]
       [--without-date]
       [--without-jpg2mp4]
-      [--headless]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
       [--reset-at hh:mm:ss]
       [--log logfile]
       [--version]
+      [--help]
 
 without --without-jpg2mp4 option,
 converts captured jpgs into mp4 movie 'out.mp4'.
 
+with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
+will be reset.
+
 ./slow.sh makes 'out.mp4' slow to 'slow.mp4'.
 which is convenient to replay.
 
-qt-rate.scpt is a spimle QuickTime replay rate changer.
-
-with --exit-at or --exit-after option, captured image does not display
-on the screen during who-is-in execution. headless mode.
-
-with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
-will be reset.
+./qt-rate.scpt is a spimle QuickTime replay rate changer.
 
 EOF
   exit(0)
@@ -106,7 +108,7 @@ class App
     @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
     @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
-    (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
+    (@mean > THRES_MEAN) and (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
   end
 
   def save(im, dir, with_date)
@@ -206,10 +208,12 @@ if __FILE__ == $0
       end
     when /--exit-after/
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
+
     when /--without-date/
       with_date = false
     when /--without-jpg2mp4/
       jpg2mp4 = false
+
     when /--log/
       log = ARGV.shift
     when /--version/
