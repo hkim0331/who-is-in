@@ -135,6 +135,7 @@ class App
       end
     end
     im.save_image(dest)
+    system("cp #{dest} /Users/hkim/Desktop/current.jpg")
     print "c" if $DEBUG
   end
 
