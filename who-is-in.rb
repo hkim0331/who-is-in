@@ -135,6 +135,9 @@ class App
       end
     end
     im.save_image(dest)
+    ##
+    system("cp #{dest} /opt/who-is-in/current.jpg")
+    ##
     print "c" if $DEBUG
   end
 

@@ -12,11 +12,23 @@ Clojure/OpenCV3 で書き直したいぞ。
 
 ## usage
 
+CHANGED. need update.
+
 ```sh
 $ make run
 or
 $ make headless
 ```
+
+## FIXME
+
+* キャプチャの時間感覚を引数に。--interval オプション。
+* 必ずしもセーブしていない、最近のフレームをチェックする機能。
+
+## TODO
+
+* 最新の who-is-in jpg をどこかにコピー、web で見せる。
+* who-is-in が fire up したら、それを watcher に届ける。メール？
 
 ## LXD device through
 
@@ -66,11 +78,6 @@ add の時に使った名前で、
 ```sh
 nuc$ lxc config device remove container name
 ```
-
-## FIXME
-
-* キャプチャの時間感覚を引数に。--interval オプション。
-* 必ずしもセーブしていない、最近のフレームをチェックする機能。
 
 ## ChangeLog
 
