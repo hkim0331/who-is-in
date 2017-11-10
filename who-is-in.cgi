@@ -23,11 +23,12 @@ content-type: text-html
 </p>
 
 <h2>last 10 days</h2>
+<p>
 EOH
 
 Dir.glob("#{IMAGES}/*.mp4").sort.reverse.each do |mp4|
   print <<EOL
-<p><video src="#{mp4}" controls width="300" height="200"></video>
+<video src="#{mp4}" controls width="300" height="200"></video>
 EOL
 end
 

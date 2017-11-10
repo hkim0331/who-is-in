@@ -80,6 +80,7 @@ class App
                  else
                    Logger::INFO
                  end
+    @mean = @sd2 = @diff2 = 0
   rescue
     puts "can not open cam. check the connection."
     exit(1)
