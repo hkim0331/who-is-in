@@ -23,11 +23,11 @@ content-type: text-html
 <img class='middle' src="#{IMAGES}/current.jpg">
 </p>
 
-<h2>last 10 days</h2>
+<h2>last 9 days</h2>
 <p>
 EOH
 
-Dir.glob("#{IMAGES}/*.mp4").sort.reverse.each do |mp4|
+Dir.glob("#{IMAGES}/*.mp4").sort.reverse[0,9].each do |mp4|
   print <<EOL
 <video class='small' src="#{mp4}" controls></video>
 EOL
