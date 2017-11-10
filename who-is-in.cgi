@@ -19,8 +19,8 @@ content-type: text-html
 
 <h2>current</h2>
 <p>
-<img src="#{IMAGES}/current-1.jpg">
-<img src="#{IMAGES}/current.jpg">
+<img class='middle' src="#{IMAGES}/current-1.jpg">
+<img class='middle' src="#{IMAGES}/current.jpg">
 </p>
 
 <h2>last 10 days</h2>
@@ -29,7 +29,7 @@ EOH
 
 Dir.glob("#{IMAGES}/*.mp4").sort.reverse.each do |mp4|
   print <<EOL
-<video src="#{mp4}" controls></video>
+<video class='small' src="#{mp4}" controls></video>
 EOL
 end
 

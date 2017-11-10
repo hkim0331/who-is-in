@@ -1,2 +1,3 @@
-img.full { width: 100%;}
-video.full { width: 100%; }
+.large { width: 100%;}
+.middle { width: 45%;}
+.small { width: 30%; }
