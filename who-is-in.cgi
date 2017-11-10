@@ -20,17 +20,16 @@ content-type: text-html
 <p><img src="#{IMAGES}/current.jpg"></p>
 
 <h2>last 10 days</h2>
-<ol>
 EOH
 
 Dir.glob("#{IMAGES}/*.mp4").sort.reverse.each do |mp4|
   print <<EOL
-<li> <video src="#{name(mp4)}" controls width="300" height="200"></video>
+<p><video src="#{mp4}" controls width="300" height="200"></video>
 EOL
 end
 
 print <<EOF
-</ol>
+</p>
 
 <hr>
 hiroshi . kimura . 0331 @ gmail . com
