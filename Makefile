@@ -1,4 +1,8 @@
-all: run
+all: install
+
+install:
+	install -m 0755 who-is-in.cgi /srv/who-is-in/
+	install -m 0644 who-is-in.css /srv/who-is-in/
 
 run:
 	./who-is-in.rb && \

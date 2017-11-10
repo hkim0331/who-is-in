@@ -22,13 +22,18 @@ $ make headless
 
 ## FIXME
 
+* 閾値も画面に表示しとこ。
+* /etc/rc.local から起動するので、イメージのオーナーが root。
 * キャプチャの時間感覚を引数に。--interval オプション。
 * 必ずしもセーブしていない、最近のフレームをチェックする機能。
 
 ## TODO
 
-* 最新の who-is-in jpg をどこかにコピー、web で見せる。
 * who-is-in が fire up したら、それを watcher に届ける。メール？
+
+## DONE
+
+* 最新の who-is-in jpg をどこかにコピー、web で見せる。
 
 ## LXD device through
 

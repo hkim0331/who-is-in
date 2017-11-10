@@ -4,14 +4,15 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.3"
+VERSION = "0.6.5"
 
 IMAGES_DIR = "./images"
+DEST_DIR = "/opt/who-is-in"
 
 POINTS = 100
 
 THRES_MEAN  = 40
-THRES_SD2   = 10
+THRES_SD2   = 20
 THRES_DIFF2 = 50*POINTS
 
 TEXT_X = 10
@@ -79,6 +80,7 @@ class App
                  else
                    Logger::INFO
                  end
+    @mean = @sd2 = @diff2 = 0
   rescue
     puts "can not open cam. check the connection."
     exit(1)
@@ -120,15 +122,15 @@ class App
                    CvFont.new(:simplex,:thickness => THICKNESS),
                    TEXT_COLOR)
       if true
-        im.put_text!(@mean.to_s,
+        im.put_text!("#{@mean}/#{THRES_MEAN}",
                      CvPoint.new(TEXT_X, TEXT_Y+50),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
-        im.put_text!(@sd2.to_s,
+        im.put_text!("#{@sd2}/#{THRES_SD2}",
                      CvPoint.new(TEXT_X, TEXT_Y+100),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
-        im.put_text!(@diff2.to_s,
+        im.put_text!("#{@diff2}/#{THRES_DIFF2}",
                      CvPoint.new(TEXT_X, TEXT_Y+150),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
@@ -136,7 +138,8 @@ class App
     end
     im.save_image(dest)
     ##
-    system("cp #{dest} /opt/who-is-in/current.jpg")
+    system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
+    system("cp #{dest} #{DEST_DIR}/current.jpg")
     ##
     print "c" if $DEBUG
   end
@@ -238,6 +241,7 @@ if __FILE__ == $0
 
   app = App.new(fps, width, height, headless, log)
   im0 = app.query
+  # save first image.
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
     im1 = app.query
