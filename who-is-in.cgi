@@ -13,11 +13,14 @@ content-type: text-html
 <link href="who-is-in.css" rel="stylesheet">
 </head>
 <body>
+<div class='container'>
 <h1>WHO IS IN?</h1>
 
 <h2>current</h2>
-<p><img src="#{IMAGES}/current-1.jpg"></p>
-<p><img src="#{IMAGES}/current.jpg"></p>
+<p>
+<img src="#{IMAGES}/current-1.jpg" width="300">
+<img src="#{IMAGES}/current.jpg" width="300">
+</p>
 
 <h2>last 10 days</h2>
 EOH
@@ -30,9 +33,9 @@ end
 
 print <<EOF
 </p>
-
 <hr>
 hiroshi . kimura . 0331 @ gmail . com
+</div>
 </body>
 </html>
 EOF
