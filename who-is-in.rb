@@ -4,9 +4,10 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.4"
+VERSION = "0.6.5"
 
 IMAGES_DIR = "./images"
+DEST_DIR = "/opt/who-is-in"
 
 POINTS = 100
 
@@ -136,7 +137,8 @@ class App
     end
     im.save_image(dest)
     ##
-    system("cp #{dest} /opt/who-is-in/current.jpg")
+    system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
+    system("cp #{dest} #{DEST_DIR}/current.jpg")
     ##
     print "c" if $DEBUG
   end

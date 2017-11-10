@@ -16,6 +16,7 @@ content-type: text-html
 <h1>WHO IS IN?</h1>
 
 <h2>current</h2>
+<p><img src="#{IMAGES}/current-1.jpg"></p>
 <p><img src="#{IMAGES}/current.jpg"></p>
 
 <h2>last 10 days</h2>
