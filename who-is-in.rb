@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.6"
+VERSION = "0.6.7"
 
 IMAGES_DIR = "./images"
 DEST_DIR = "/opt/who-is-in"
