@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.5"
+VERSION = "0.6.7"
 
 IMAGES_DIR = "./images"
 DEST_DIR = "/opt/who-is-in"
@@ -58,6 +58,14 @@ def sd2(xs)
   xs.map{|x| (x-mean)*(x-mean)}.inject(:+)/length
 end
 
+def abs(x)
+  if x>0
+    x
+  else
+    -x
+  end
+end
+
 class App
   attr_reader :points
 
@@ -81,6 +89,7 @@ class App
                    Logger::INFO
                  end
     @mean = @sd2 = @diff2 = 0
+    @last_mean = @last_sd2 = 0
   rescue
     puts "can not open cam. check the connection."
     exit(1)
@@ -110,7 +119,11 @@ class App
     @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
     @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
-    (@mean > THRES_MEAN) and (@sd2 > THRES_SD2) and (@diff2 > THRES_DIFF2)
+    (@mean > THRES_MEAN) and
+      (@sd2 > THRES_SD2) and
+      (abs(@mean-@last_mean) > @mean/10) and
+      (abs(@sd2-@last_sd2) > @sd2/10) and
+      (@diff2 > THRES_DIFF2)
   end
 
   def save(im, dir, with_date)
@@ -137,9 +150,10 @@ class App
       end
     end
     im.save_image(dest)
-    ##
-    system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
-    system("cp #{dest} #{DEST_DIR}/current.jpg")
+    unless $DEBUG
+      system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
+      system("cp #{dest} #{DEST_DIR}/current.jpg")
+    end
     ##
     print "c" if $DEBUG
   end
@@ -264,7 +278,6 @@ if __FILE__ == $0
     if headless
       sleep(1.0/fps)
     else
-      puts "headless: #{headless}"
       GUI::wait_key((1000/fps).to_i)
     end
 

@@ -22,6 +22,7 @@ $ make headless
 
 ## FIXME
 
+* /var/run/who-is-in.pid 作戦。
 * 閾値も画面に表示しとこ。
 * /etc/rc.local から起動するので、イメージのオーナーが root。
 * キャプチャの時間感覚を引数に。--interval オプション。
