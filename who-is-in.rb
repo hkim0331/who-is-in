@@ -124,6 +124,9 @@ class App
       (abs(@mean-@last_mean) > @mean/10) and
       (abs(@sd2-@last_sd2) > @sd2/10) and
       (@diff2 > THRES_DIFF2)
+    # forgot to update!
+    @last_mean = @mean
+    @last_sd2 = @sd2
   end
 
   def save(im, dir, with_date)
