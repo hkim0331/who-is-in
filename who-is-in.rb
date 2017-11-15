@@ -14,8 +14,9 @@ POINTS = 100
 THRES_MEAN  = 40
 THRES_SD2   = 20
 THRES_DIFF2 = 50*POINTS
-THRES_MEAN_DIFF = 10
-THRES_SD2_DIFF = 50
+
+THRES_MEAN_DIFF = 1
+THRES_SD2_DIFF = 10
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -109,6 +110,8 @@ class App
   end
 
   def diff?(im0, im1)
+    @last_mean = @mean
+    @last_sd2 = @sd2
     @mean  = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS
     @sd2   = sd2 (@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})
     @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}.inject(:+)}.inject(:+).floor/POINTS
@@ -118,8 +121,6 @@ class App
       (@mean > THRES_MEAN) and
       (@diff2 > THRES_DIFF2) and
       (@sd2 > THRES_SD2)
-    @last_mean = @mean
-    @last_sd2 = @sd2
     ret
   end
 
@@ -144,6 +145,14 @@ class App
                      CvPoint.new(TEXT_X, TEXT_Y+150),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
+        im.put_text!("#{abs(@mean-@last_mean)}/#{THRES_MEAN_DIFF}",
+                     CvPoint.new(TEXT_X, TEXT_Y+200),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
+        im.put_text!("#{abs(@sd2-@last_sd2)}/#{THRES_SD2_DIFF}",
+                     CvPoint.new(TEXT_X, TEXT_Y+250),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
       end
     end
     im.save_image(dest)
@@ -152,7 +161,10 @@ class App
       system("cp #{dest} #{DEST_DIR}/current.jpg")
     end
     ##
-    print "c" if $DEBUG
+    if $DEBUG
+      print "c"
+      print "\a"
+    end
   end
 
   def reset
