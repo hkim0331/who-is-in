@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.6.7"
+VERSION = "0.7"
 
 IMAGES_DIR = "./images"
 DEST_DIR = "/opt/who-is-in"
@@ -112,15 +112,27 @@ class App
   def diff?(im0, im1)
     @last_mean = @mean
     @last_sd2 = @sd2
+
     @mean  = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS
     @sd2   = sd2 (@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})
     @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}.inject(:+)}.inject(:+).floor/POINTS
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
+
+    # bug!
     ret = ((abs(@mean-@last_mean) > THRES_MEAN_DIFF) and
-      (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
-      (@mean > THRES_MEAN) and
-      (@diff2 > THRES_DIFF2) and
-      (@sd2 > THRES_SD2))
+           (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
+           (@mean > THRES_MEAN) and
+           (@diff2 > THRES_DIFF2) and
+           (@sd2 > THRES_SD2))
+
+    ret2 = (abs(@mean-@last_mean) > THRES_MEAN_DIFF) and
+            (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
+            (@mean > THRES_MEAN) and
+            (@diff2 > THRES_DIFF2) and
+            (@sd2 > THRES_SD2)
+
+#    puts "ret == reg2? :#{ret == ret2}"
+
     ret
   end
 
