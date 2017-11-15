@@ -1,16 +1,19 @@
 #!/usr/bin/env ruby
+require 'logger'
 require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.5.3"
+VERSION = "0.6.7"
 
 IMAGES_DIR = "./images"
+DEST_DIR = "/opt/who-is-in"
 
 POINTS = 100
 
-THRES_0  = 3000
-THRES_1  = POINTS*4000
+THRES_MEAN  = 40
+THRES_SD2   = 20
+THRES_DIFF2 = 50*POINTS
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -21,26 +24,29 @@ def usage(s)
   print <<EOF
 #{s}
 #{$0} [--debug]
+      [--fps fps]
+      [--width width]
+      [--height height]
+      [--headless]
       [--without-date]
       [--without-jpg2mp4]
       [--exit-at hh:mm:ss]
       [--exit-after sec]
       [--reset-at hh:mm:ss]
+      [--log logfile]
       [--version]
+      [--help]
 
 without --without-jpg2mp4 option,
 converts captured jpgs into mp4 movie 'out.mp4'.
 
+with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
+will be reset.
+
 ./slow.sh makes 'out.mp4' slow to 'slow.mp4'.
 which is convenient to replay.
 
-qt-rate.scpt is a spimle QuickTime replay rate changer.
-
-with --exit-at or --exit-after option, captured image does not display
-on the screen during who-is-in execution. headless mode.
-
-with --rest-at, images/*.jpg files are cleared. also numbers to jpg files
-will be reset.
+./qt-rate.scpt is a spimle QuickTime replay rate changer.
 
 EOF
   exit(0)
@@ -52,11 +58,19 @@ def sd2(xs)
   xs.map{|x| (x-mean)*(x-mean)}.inject(:+)/length
 end
 
+def abs(x)
+  if x>0
+    x
+  else
+    -x
+  end
+end
+
 class App
   attr_reader :points
 
-  def initialize(fps, width, height, exit_at)
-    @window = GUI::Window.new("who is in?") unless exit_at
+  def initialize(fps, width, height, headless, logfile)
+    @window = GUI::Window.new("who is in?") unless headless
     @cam = CvCapture.open(0)
     @cam.width= width
     @cam.height= height
@@ -66,6 +80,16 @@ class App
     @points = Array.new(POINTS).map{|x| [rand(width), rand(height)]}
     @num = 0
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
+
+    system("touch #{logfile}")
+    @log = Logger.new(logfile)
+    @log.level = if $DEBUG
+                   Logger::DEBUG
+                 else
+                   Logger::INFO
+                 end
+    @mean = @sd2 = @diff2 = 0
+    @last_mean = @last_sd2 = 0
   rescue
     puts "can not open cam. check the connection."
     exit(1)
@@ -91,16 +115,15 @@ class App
   end
 
   def diff?(im0, im1)
-    @d0 = sd2(@points.map{|p| y,x = p; rgb2gray(im0[x,y]) - rgb2gray(im1[x,y])})
-    @d1 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)
-    @d0 = @d0.floor
-    @d1 = @d1.floor
-    if $DEBUG
-      puts ""
-      puts "sd2:  #{@d0}"
-      puts "diff: #{@d1}"
-    end
-    (@d0 > THRES_0) and (@d1 > THRES_1)
+    @mean  = (@points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS).floor
+    @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
+    @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
+    @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
+    (@mean > THRES_MEAN) and
+      (@sd2 > THRES_SD2) and
+      (abs(@mean-@last_mean) > @mean/10) and
+      (abs(@sd2-@last_sd2) > @sd2/10) and
+      (@diff2 > THRES_DIFF2)
   end
 
   def save(im, dir, with_date)
@@ -111,18 +134,27 @@ class App
                    CvPoint.new(TEXT_X, TEXT_Y),
                    CvFont.new(:simplex,:thickness => THICKNESS),
                    TEXT_COLOR)
-      if $DEBUG
-        im.put_text!(@d0.to_s,
+      if true
+        im.put_text!("#{@mean}/#{THRES_MEAN}",
+                     CvPoint.new(TEXT_X, TEXT_Y+50),
+                     CvFont.new(:simplex,:thickness => THICKNESS),
+                     TEXT_COLOR)
+        im.put_text!("#{@sd2}/#{THRES_SD2}",
                      CvPoint.new(TEXT_X, TEXT_Y+100),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
-        im.put_text!(@d1.to_s,
-                     CvPoint.new(TEXT_X, TEXT_Y+200),
+        im.put_text!("#{@diff2}/#{THRES_DIFF2}",
+                     CvPoint.new(TEXT_X, TEXT_Y+150),
                      CvFont.new(:simplex,:thickness => THICKNESS),
                      TEXT_COLOR)
       end
     end
     im.save_image(dest)
+    unless $DEBUG
+      system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
+      system("cp #{dest} #{DEST_DIR}/current.jpg")
+    end
+    ##
     print "c" if $DEBUG
   end
 
@@ -156,27 +188,30 @@ end
 #
 
 if __FILE__ == $0
-  $DEBUG = false
-  exit_at = false
-  reset_at = false
+  $DEBUG    = false
+  exit_at   = false
+  reset_at  = false
   with_date = true
-  jpg2mp4 = true
+  jpg2mp4   = true
+  headless  = false
+  log = "log/who-is-in.log"
+
   fps = 1.0
   width = 640
   height = 360
+
   while arg = ARGV.shift
     case arg
     when /--debug/
       $DEBUG = true
-    when /--version/
-      puts VERSION
-      exit(1)
     when /--fps/
       fps = ARGV.shift.to_r
     when /--width/
       width = ARGV.shift.to_i
     when /--height/
       height = ARGV.shift.to_i
+    when /--headless/
+      headless = true
     when /--exit-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -184,12 +219,6 @@ if __FILE__ == $0
       else
         raise "time format error: ${arg}"
       end
-    when /--exit-after/
-      exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
-    when /--without-date/
-      with_date = false
-    when /--without-jpg2mp4/
-      jpg2mp4 = false
     when /--reset-at/
       arg = ARGV.shift
       if arg =~ /\A\d\d:\d\d:\d\d\Z/
@@ -197,6 +226,16 @@ if __FILE__ == $0
       else
         raise "time format error: ${arg}"
       end
+    when /--exit-after/
+      exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
+
+    when /--without-date/
+      with_date = false
+    when /--without-jpg2mp4/
+      jpg2mp4 = false
+
+    when /--log/
+      log = ARGV.shift
     when /--version/
       puts VERSION
       exit(0)
@@ -206,39 +245,45 @@ if __FILE__ == $0
       usage "unknown arg: #{arg}"
     end
   end
+
   if $DEBUG
     puts "start: #{Time.now.strftime('%T')}"
     puts "end: #{exit_at}"
     puts "fps: #{fps}"
     puts "width: #{width}"
-    puts "height: #{height}"
   end
 
-  app = App.new(fps, width, height, exit_at)
+  app = App.new(fps, width, height, headless, log)
   im0 = app.query
+  # save first image.
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
     im1 = app.query
+    app.show(im1) unless headless
     if app.diff?(im0, im1)
       app.save(im1, IMAGES_DIR, with_date)
-      app.show(im1) unless exit_at
       im0 = im1
     end
+
+    if exit_at and time_has_come?(exit_at)
+      break
+    end
+
     if reset_at and time_is?(reset_at)
       do_jpg2mp4() if jpg2mp4
       app.reset()
       sleep(61)
     end
-    if exit_at
-      if time_has_come?(exit_at)
-        break
-      else
-        sleep(1.0/fps)
-      end
+
+    if headless
+      sleep(1.0/fps)
     else
-      GUI::wait_key(1000/fps)
+      GUI::wait_key((1000/fps).to_i)
     end
+
   end
-  app.close()
+
   do_jpg2mp4() if jpg2mp4
+  app.close()
+
 end

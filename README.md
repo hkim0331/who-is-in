@@ -12,11 +12,29 @@ Clojure/OpenCV3 で書き直したいぞ。
 
 ## usage
 
+CHANGED. need update.
+
 ```sh
 $ make run
 or
 $ make headless
 ```
+
+## FIXME
+
+* /var/run/who-is-in.pid 作戦。
+* 閾値も画面に表示しとこ。
+* /etc/rc.local から起動するので、イメージのオーナーが root。
+* キャプチャの時間感覚を引数に。--interval オプション。
+* 必ずしもセーブしていない、最近のフレームをチェックする機能。
+
+## TODO
+
+* who-is-in が fire up したら、それを watcher に届ける。メール？
+
+## DONE
+
+* 最新の who-is-in jpg をどこかにコピー、web で見せる。
 
 ## LXD device through
 
@@ -27,20 +45,27 @@ hkim@nuc:~$ lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 002: ID 8087:0a2b Intel Corp.
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+$
+```
+
+ここで USB カメラを適当なポートにつなぐ。
+
+```sh
 hkim@nuc:~$ lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 002: ID 8087:0a2b Intel Corp.
 Bus 001 Device 018: ID 046d:0821 Logitech, Inc. HD Webcam C910
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+$
 ```
 Logtech C910が Bus 001 Device 018 でホストに認識されている。
 
 ### これは必要か？
 
-vm2017 では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
+picaro では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
 
 ```sh
-vm2017$ lxc config device add container video0 unix-char path=/dev/video0
+picaro$ lxc config device add vm2017 video0 unix-char path=/dev/video0
 ```
 
 その後、
@@ -60,18 +85,13 @@ add の時に使った名前で、
 nuc$ lxc config device remove container name
 ```
 
-## FIXME
-
-* 起動の仕方。make ががんばり足りない。
-* キャプチャの時間感覚を引数に。--interval オプション。
-* カメラキャプチャと wait_key との違う場面で SLEEP を使い回すのはオカシイ。
-* 必ずしもセーブしていない、最近のフレームをチェックする機能。
-
 ## ChangeLog
 
+* [add] --log filename
+* [change] GUI::wait\_key unless reset\_at or exit\_at
 * [change] -y (overwrite) to ffmpeg
 * [add] --without-jpg2mp4 オプション。
-* [add] --reset オプション。
+* [add] --reset-at オプション。
 * [add] --version オプション。0.5.0
 * [add] sd2. ピクセル差分の標準偏差で明暗が違うだけのフレームを捨てる。
 * [add] qt-rate.scpt

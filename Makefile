@@ -1,8 +1,8 @@
-all: run
+all: install
 
-clean:
-	${RM} *.mp4
-	${RM} images/*.jpg
+install:
+	install -m 0755 who-is-in.cgi /srv/who-is-in/
+	install -m 0644 who-is-in.css /srv/who-is-in/
 
 run:
 	./who-is-in.rb && \
@@ -16,3 +16,7 @@ headless:
 	./jpg2mp4.sh && \
 	./slow.sh && \
 	open slow.mp4
+
+clean:
+	${RM} *.mp4
+	${RM} images/*.jpg
