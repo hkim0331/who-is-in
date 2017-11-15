@@ -14,6 +14,8 @@ POINTS = 100
 THRES_MEAN  = 40
 THRES_SD2   = 20
 THRES_DIFF2 = 50*POINTS
+THRES_MEAN_DIFF = 10
+THRES_SD2_DIFF = 50
 
 TEXT_X = 10
 TEXT_Y = 50
@@ -59,11 +61,7 @@ def sd2(xs)
 end
 
 def abs(x)
-  if x>0
-    x
-  else
-    -x
-  end
+  x < 0 ? -x : x
 end
 
 class App
@@ -83,13 +81,9 @@ class App
 
     system("touch #{logfile}")
     @log = Logger.new(logfile)
-    @log.level = if $DEBUG
-                   Logger::DEBUG
-                 else
-                   Logger::INFO
-                 end
-    @mean = @sd2 = @diff2 = 0
-    @last_mean = @last_sd2 = 0
+    @log.level = Logger::INFO
+    @log.level = Logger::DEBUG if $DEBUG
+    @mean = @sd2 = @diff2 = @last_mean = @last_sd2 = 0
   rescue
     puts "can not open cam. check the connection."
     exit(1)
@@ -111,19 +105,20 @@ class App
 
   def rgb2gray(pic)
     r,g,b = pic
-    0.299*r + 0.587*g + 0.144*b
+    (0.299*r + 0.587*g + 0.144*b).floor
   end
 
   def diff?(im0, im1)
-    @mean  = (@points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS).floor
-    @sd2   = (sd2(@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})/POINTS).floor
-    @diff2 = (@points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}}.flatten.inject(:+)/POINTS).floor
+    @mean  = @points.map{|p| y,x = p; rgb2gray(im1[x,y])}.inject(:+)/POINTS
+    @sd2   = sd2 (@points.map{|p| y,x = p; rgb2gray(im0[x, y]) - rgb2gray(im1[x,y])})
+    @diff2 = @points.map{|p| y,x = p; (im0[x,y] - im1[x,y]).to_a.map{|z| z*z}.inject(:+)}.inject(:+).floor/POINTS
     @log.debug("mean: #{@mean} sd2: #{@sd2} diff2: #{@diff2}")
-    (@mean > THRES_MEAN) and
-      (@sd2 > THRES_SD2) and
-      (abs(@mean-@last_mean) > @mean/10) and
-      (abs(@sd2-@last_sd2) > @sd2/10) and
-      (@diff2 > THRES_DIFF2)
+
+    (abs(@mean-@last_mean) > THRES_MEAN_DIFF) and
+      (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
+      (@mean > THRES_MEAN) and
+      (@diff2 > THRES_DIFF2) and
+      (@sd2 > THRES_SD2)
   end
 
   def save(im, dir, with_date)
@@ -228,21 +223,17 @@ if __FILE__ == $0
       end
     when /--exit-after/
       exit_at = (Time.now + ARGV.shift.to_i).strftime("%T")
-
     when /--without-date/
       with_date = false
     when /--without-jpg2mp4/
       jpg2mp4 = false
-
     when /--log/
       log = ARGV.shift
     when /--version/
       puts VERSION
       exit(0)
-    when /--/
-      usage "usage:"
     else
-      usage "unknown arg: #{arg}"
+      usage("unknown arg: #{arg}")
     end
   end
 
