@@ -2,7 +2,7 @@ all: install
 
 install:
 	mkdir -p /opt/who-is-in/bin
-  mkdir -p /opt/who-is-in/images
+	mkdir -p /opt/who-is-in/images
 	install -m 0755 who-is-in.rb restart.sh /opt/who-is-in/bin
 	install -m 0755 who-is-in.cgi /srv/who-is-in/
 	install -m 0644 who-is-in.css /srv/who-is-in/
