@@ -168,7 +168,8 @@ class App
       end
     end
     im.save_image(dest)
-    unless $DEBUG
+
+    if Dir.exists?(DEST_DIR)
       system("mv #{DEST_DIR}/current.jpg #{DEST_DIR}/current-1.jpg")
       system("cp #{dest} #{DEST_DIR}/current.jpg")
     end
