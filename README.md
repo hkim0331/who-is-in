@@ -20,21 +20,21 @@ or
 $ make headless
 ```
 
-## FIXME
-
-* /var/run/who-is-in.pid 作戦。
-* 閾値も画面に表示しとこ。
-* /etc/rc.local から起動するので、イメージのオーナーが root。
-* キャプチャの時間感覚を引数に。--interval オプション。
-* 必ずしもセーブしていない、最近のフレームをチェックする機能。
-
 ## TODO
 
+* 最後のフレームをキーフレームに。今は最初のフレームになっている。
+* /etc/rc.local から起動するので、イメージのオーナーが root。
+* キャプチャの時間間隔。--interval オプション。
+* 必ずしもセーブしていない、最近のフレームをチェックする。
 * who-is-in が fire up したら、それを watcher に届ける。メール？
 
 ## DONE
 
+* 閾値も画面に表示。
 * 最新の who-is-in jpg をどこかにコピー、web で見せる。
+
+## FIXME
+
 
 ## LXD device through
 
