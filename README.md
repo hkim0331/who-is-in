@@ -38,7 +38,8 @@ $ make headless
 
 ## LXD device through
 
-LXD ゲストで who-is-in する場合、ホスト側で認識した USB カメラをゲストで共有する必要がある。
+LXD ゲストで who-is-in する場合、
+ホスト側で認識した USB カメラをゲストで共有する必要がある。
 
 ```sh
 hkim@nuc:~$ lsusb
@@ -62,7 +63,8 @@ Logtech C910が Bus 001 Device 018 でホストに認識されている。
 
 ### これは必要か？
 
-picaro では次のコマンドで /dev/video0 を作った後、webcam を認識させるコマンドを実行している。
+picaro では次のコマンドで /dev/video0 を作った後、
+webcam を認識させるコマンドを実行している。
 
 ```sh
 picaro$ lxc config device add vm2017 video0 unix-char path=/dev/video0
@@ -87,6 +89,8 @@ nuc$ lxc config device remove container name
 
 ## ChangeLog
 
+* [2017-11-20] who-is-in.rb and restart.sh goes to /opt/who-is-in/bin/
+* [2017-11-20] jpg2mp4 will copy out.mp4 to /opt/who-is-in/images/
 * [add] --log filename
 * [change] GUI::wait\_key unless reset\_at or exit\_at
 * [change] -y (overwrite) to ffmpeg
