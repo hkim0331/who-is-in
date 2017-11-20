@@ -19,8 +19,8 @@ content-type: text-html
 
 <h2>current</h2>
 <p>
-<img class='middle' src="#{IMAGES}/current-1.jpg">
 <img class='middle' src="#{IMAGES}/current.jpg">
+<img class='middle' src="#{IMAGES}/current-1.jpg">
 </p>
 
 <h2>last 9 days</h2>
