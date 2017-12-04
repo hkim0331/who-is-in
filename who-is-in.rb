@@ -130,7 +130,6 @@ class App
             (@mean > THRES_MEAN) and
             (@diff2 > THRES_DIFF2) and
             (@sd2 > THRES_SD2)
-
 #    puts "ret == reg2? :#{ret == ret2}"
 
     ret
@@ -182,6 +181,7 @@ class App
 
   def reset
     system("rm -f images/*.jpg")
+    system("rm -f reverse/*.jpg")
     @num = 0
   end
 
