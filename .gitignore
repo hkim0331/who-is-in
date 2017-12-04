@@ -1,4 +1,10 @@
 .DS_Store
+/images
+/log
+/reverse
+!/images/.placeholder
+!/log/.placeholder
+!/reverse/.placeholder
 *.jpg
 *.mp4
 *.log
