@@ -272,7 +272,9 @@ if __FILE__ == $0
   end
 
   app = App.new(fps, width, height, headless, log)
-  im0 = app.query
+  app.reset()
+  im0 = app.query()
+
   # save first image.
   app.save(im0, IMAGES_DIR, with_date)
   while (true)
