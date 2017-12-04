@@ -3,7 +3,7 @@
 
 IMAGES="images"
 print <<EOH
-content-type: text-html
+content-type: text/html
 
 <html>
 <head>
