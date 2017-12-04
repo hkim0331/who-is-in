@@ -1,7 +1,7 @@
 .DS_Store
-/images
-/log
-/reverse
+/images/*
+/log/*
+/reverse/*
 !/images/.placeholder
 !/log/.placeholder
 !/reverse/.placeholder
