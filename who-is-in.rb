@@ -125,11 +125,11 @@ class App
            (@diff2 > THRES_DIFF2) and
            (@sd2 > THRES_SD2))
 
-    ret2 = (abs(@mean-@last_mean) > THRES_MEAN_DIFF) and
-            (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
-            (@mean > THRES_MEAN) and
-            (@diff2 > THRES_DIFF2) and
-            (@sd2 > THRES_SD2)
+    # ret2 = (abs(@mean-@last_mean) > THRES_MEAN_DIFF) and
+    #         (abs(@sd2-@last_sd2) > THRES_SD2_DIFF) and
+    #         (@mean > THRES_MEAN) and
+    #         (@diff2 > THRES_DIFF2) and
+    #         (@sd2 > THRES_SD2)
 #    puts "ret == reg2? :#{ret == ret2}"
 
     ret
