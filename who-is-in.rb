@@ -4,7 +4,7 @@ require 'opencv'
 include OpenCV
 
 DEBUG = true
-VERSION = "0.7"
+VERSION = "0.9.1"
 
 IMAGES_DIR = "./images"
 DEST_DIR = "/opt/who-is-in/images"
@@ -81,7 +81,7 @@ class App
     Dir.glob("#{IMAGES_DIR}/*").map{|f| File.unlink(f)}
 
     system("touch #{logfile}")
-    @log = Logger.new(logfile)
+    @log = Logger.new(logfile, 5, 10*1024)
     @log.level = Logger::INFO
     @log.level = Logger::DEBUG if $DEBUG
     @mean = @sd2 = @diff2 = @last_mean = @last_sd2 = 0
