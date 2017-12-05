@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'Logger'
+require 'logger'
 log = Logger.new("log/who-is-in.log", 5, 10*1024)
 log.level = Logger::DEBUG
 
-orig = Dir.glob("images/*.jpg")
+orig = Dir.glob("images/*.jpg").sort
 rev = orig.reverse.map{ |x| x.sub(/images/,"reverse")}
 
 # NO?
