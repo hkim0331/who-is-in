@@ -9,6 +9,10 @@ EOF
   exit
 end
 
+# require 'logger'
+# log = Logger.new("log/who-is-in.log", 5, 10*1024)
+# log.level = Logger::DEBUG
+
 usage unless ARGV.length == 1
 
 Dir.chdir(ARGV[0]) do
