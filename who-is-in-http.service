@@ -1,0 +1,14 @@
+[Unit]
+Description=who-is-in-http
+After=network.target
+
+[Service]
+Type=simple
+User=hkim
+WorkingDirectory=/srv/who-is-in
+ExecStart=/usr/bin/ruby webrick.rb
+TimeoutSec=300
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
