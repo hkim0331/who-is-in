@@ -1,14 +1,13 @@
 [Unit]
-Description=who-is-in
-After=network.target
+Description = who-is-in server
 
 [Service]
-Type=simple
-User=hkim
 WorkingDirectory=/home/hkim/who-is-in
 ExecStart=/usr/bin/ruby who-is-in.rb --headless
-TimeoutSec=300
 Restart=always
+TimeoutSec=300
+Type=simple
+User=hkim
 
 [Install]
 WantedBy=multi-user.target
